@@ -1,0 +1,166 @@
+import tkinter as tk
+import time
+
+class Pila:
+
+    def __init__(self, MAX):
+        self.MAX = MAX
+        self.TOPE = 0
+        self.Datos = [0]*MAX
+
+    def Pila_vacia(self):
+        return self.TOPE == 0
+
+    def Pila_llena(self):
+        return self.TOPE == self.MAX
+
+    def Pone(self, argumento):
+        if not self.Pila_llena():
+            self.Datos[self.TOPE] = argumento
+            self.TOPE += 1
+
+    def Quita(self):
+        if not self.Pila_vacia():
+            self.TOPE -= 1
+            return self.Datos[self.TOPE]
+
+
+class Hanoi:
+
+    def __init__(self, root):
+
+        self.root = root
+        self.root.title("Torres de Hanoi")
+
+        control = tk.Frame(root)
+        control.pack()
+
+        tk.Label(control,text="Discos:").pack(side=tk.LEFT)
+
+        self.entrada = tk.Entry(control,width=5)
+        self.entrada.pack(side=tk.LEFT)
+        self.entrada.insert(0,"3")
+
+        tk.Button(control,text="Aplicar",command=self.aplicar).pack(side=tk.LEFT,padx=5)
+
+        tk.Button(control,text="Reiniciar",command=self.reset).pack(side=tk.LEFT)
+
+        self.info = tk.Label(root,text="")
+        self.info.pack()
+
+        self.canvas = tk.Canvas(root,width=600,height=350,bg="white")
+        self.canvas.pack()
+
+        self.n = 3
+        self.reset()
+
+
+    def aplicar(self):
+
+        try:
+            valor = int(self.entrada.get())
+
+            if valor < 1:
+                valor = 1
+            if valor > 8:
+                valor = 8
+
+            self.n = valor
+            self.reset()
+
+        except:
+            pass
+
+
+    def reset(self):
+
+        self.movimientos = 0
+
+        self.info.config(
+            text=f"{self.movimientos} movimientos\nMejor: {2**self.n-1}"
+        )
+
+        self.A = Pila(self.n)
+        self.B = Pila(self.n)
+        self.C = Pila(self.n)
+
+        for i in range(self.n,0,-1):
+            self.A.Pone(i)
+
+        self.dibujar()
+
+        self.root.after(500,self.iniciar)
+
+
+    def iniciar(self):
+        self.hanoi(self.n,self.A,self.B,self.C)
+
+
+    def mover(self,origen,destino):
+
+        disco = origen.Quita()
+        destino.Pone(disco)
+
+        self.movimientos += 1
+
+        self.info.config(
+            text=f"{self.movimientos} movimientos\nMejor: {2**self.n-1}"
+        )
+
+        self.dibujar()
+
+        self.root.update()
+
+        time.sleep(0.5)
+
+
+    def hanoi(self,n,origen,aux,dest):
+
+        if n == 1:
+
+            self.mover(origen,dest)
+
+        else:
+
+            self.hanoi(n-1,origen,dest,aux)
+
+            self.mover(origen,dest)
+
+            self.hanoi(n-1,aux,origen,dest)
+
+
+    def dibujar(self):
+
+        self.canvas.delete("all")
+
+        bases=[150,300,450]
+
+        for x in bases:
+            self.canvas.create_rectangle(x-5,150,x+5,300,fill="black")
+            self.canvas.create_rectangle(x-80,300,x+80,310,fill="black")
+
+        torres=[self.A,self.B,self.C]
+
+        for t,torre in enumerate(torres):
+
+            x=bases[t]
+
+            for i in range(torre.TOPE):
+
+                disco=torre.Datos[i]
+
+                ancho = disco * 15
+                y=290-i*25
+
+                self.canvas.create_rectangle(
+                    x-ancho,
+                    y,
+                    x+ancho,
+                    y+20,
+                    fill="blue"
+                )
+
+
+root=tk.Tk()
+app=Hanoi(root)
+root.mainloop()
