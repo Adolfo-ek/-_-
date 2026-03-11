@@ -1,0 +1,262 @@
+import tkinter as tk
+from tkinter import messagebox
+
+pila = []
+
+def actualizar_pila():
+    canvas.delete("all")
+    y = 260
+
+    for i, elemento in enumerate(reversed(pila)):
+
+        canvas.create_rectangle(
+            80, y, 220, y-40,
+            fill="#4FC3F7",
+            outline="#01579B",
+            width=2
+        )
+
+        canvas.create_text(
+            150, y-20,
+            text=str(elemento),
+            font=("Segoe UI", 12, "bold"),
+            fill="white"
+        )
+
+        if i == 0:
+            canvas.create_text(
+                260, y-20,
+                text="TOP",
+                fill="red",
+                font=("Segoe UI", 10, "bold")
+            )
+
+        y -= 45
+
+    etiqueta_tamano.config(text=f"Tamaño de la pila: {len(pila)}")
+
+
+def operar(a, b, op):
+
+    if op == "+":
+        return a + b
+
+    if op == "-":
+        return a - b
+
+    if op == "*":
+        return a * b
+
+    if op == "/":
+        return a / b
+
+
+def evaluar_posfija(expresion):
+
+    pila.clear()
+    tokens = expresion.split()
+
+    for token in tokens:
+
+        if token.isdigit():
+
+            pila.append(int(token))
+
+        else:
+
+            if len(pila) < 2:
+                raise Exception("Expresión inválida")
+
+            b = pila.pop()
+            a = pila.pop()
+
+            resultado = operar(a, b, token)
+
+            pila.append(resultado)
+
+        actualizar_pila()
+        ventana.update()
+        ventana.after(600)
+
+    return pila[-1]
+
+
+def evaluar_prefija(expresion):
+
+    pila.clear()
+    tokens = expresion.split()[::-1]
+
+    for token in tokens:
+
+        if token.isdigit():
+
+            pila.append(int(token))
+
+        else:
+
+            if len(pila) < 2:
+                raise Exception("Expresión inválida")
+
+            a = pila.pop()
+            b = pila.pop()
+
+            resultado = operar(a, b, token)
+
+            pila.append(resultado)
+
+        actualizar_pila()
+        ventana.update()
+        ventana.after(600)
+
+    return pila[-1]
+
+
+def evaluar():
+
+    expresion = entrada.get()
+
+    if expresion == "":
+        messagebox.showwarning("Aviso", "Ingresa una expresión")
+        return
+
+    try:
+
+        if tipo_notacion.get() == "posfija":
+
+            resultado = evaluar_posfija(expresion)
+
+        else:
+
+            resultado = evaluar_prefija(expresion)
+
+        resultado_label.config(text=f"Resultado: {resultado}")
+
+    except:
+
+        messagebox.showerror("Error", "Expresión inválida")
+
+
+def limpiar():
+
+    pila.clear()
+    entrada.delete(0, tk.END)
+    resultado_label.config(text="Resultado:")
+    actualizar_pila()
+
+
+ventana = tk.Tk()
+ventana.title("Evaluador de Expresiones con Pila")
+ventana.geometry("500x600")
+ventana.configure(bg="#1e1e2f")
+
+
+titulo = tk.Label(
+    ventana,
+    text="Evaluador de Expresiones con Pila",
+    font=("Segoe UI", 18, "bold"),
+    bg="#1e1e2f",
+    fg="white"
+)
+
+titulo.pack(pady=15)
+
+
+frame = tk.Frame(ventana, bg="#2b2b3c")
+frame.pack(pady=10)
+
+
+tk.Label(
+    frame,
+    text="Expresión:",
+    bg="#2b2b3c",
+    fg="white",
+    font=("Segoe UI", 11)
+).grid(row=0, column=0, padx=10)
+
+
+entrada = tk.Entry(frame, width=30, font=("Segoe UI", 11))
+entrada.grid(row=0, column=1, padx=10)
+
+
+tipo_notacion = tk.StringVar(value="posfija")
+
+radio = tk.Frame(ventana, bg="#1e1e2f")
+radio.pack()
+
+tk.Radiobutton(
+    radio,
+    text="Posfija",
+    variable=tipo_notacion,
+    value="posfija",
+    bg="#1e1e2f",
+    fg="white",
+    selectcolor="#444"
+).pack(side="left", padx=10)
+
+tk.Radiobutton(
+    radio,
+    text="Prefija",
+    variable=tipo_notacion,
+    value="prefija",
+    bg="#1e1e2f",
+    fg="white",
+    selectcolor="#444"
+).pack(side="left", padx=10)
+
+
+botones = tk.Frame(ventana, bg="#1e1e2f")
+botones.pack(pady=10)
+
+tk.Button(
+    botones,
+    text="Evaluar",
+    bg="#00c853",
+    fg="white",
+    width=12,
+    command=evaluar
+).grid(row=0, column=0, padx=10)
+
+tk.Button(
+    botones,
+    text="Limpiar",
+    bg="#ff5252",
+    fg="white",
+    width=12,
+    command=limpiar
+).grid(row=0, column=1, padx=10)
+
+
+canvas = tk.Canvas(
+    ventana,
+    width=300,
+    height=300,
+    bg="#121212",
+    bd=3,
+    relief="ridge"
+)
+
+canvas.pack(pady=20)
+
+
+etiqueta_tamano = tk.Label(
+    ventana,
+    text="Tamaño de la pila: 0",
+    bg="#1e1e2f",
+    fg="white"
+)
+
+etiqueta_tamano.pack()
+
+
+resultado_label = tk.Label(
+    ventana,
+    text="Resultado:",
+    font=("Segoe UI", 14, "bold"),
+    bg="#1e1e2f",
+    fg="#00e5ff"
+)
+
+resultado_label.pack(pady=10)
+
+
+ventana.mainloop()
