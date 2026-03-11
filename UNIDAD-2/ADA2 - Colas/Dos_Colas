@@ -1,0 +1,143 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class Cola:
+
+    def __init__(self, MAX):
+        self.MAX = MAX
+        self.frente = 0
+        self.final = 0
+        self.datos = [0]*MAX
+
+    def vacia(self):
+        return self.frente == self.final
+
+    def llena(self):
+        return self.final == self.MAX
+
+    def encolar(self, valor):
+        if not self.llena():
+            self.datos[self.final] = valor
+            self.final += 1
+
+    def desencolar(self):
+        if not self.vacia():
+            valor = self.datos[self.frente]
+            self.frente += 1
+            return valor
+
+
+MAX = 10
+colaA = Cola(MAX)
+colaB = Cola(MAX)
+colaR = Cola(MAX)
+
+
+def dibujar():
+
+    canvas.delete("all")
+
+    dibujar_cola(colaA,100,"Cola A")
+    dibujar_cola(colaB,300,"Cola B")
+    dibujar_cola(colaR,500,"Resultado")
+
+
+def dibujar_cola(cola,x,titulo):
+
+    canvas.create_text(x,40,text=titulo,font=("Arial",12,"bold"))
+
+    y=80
+
+    for i in range(cola.frente,cola.final):
+
+        valor = cola.datos[i]
+
+        canvas.create_rectangle(x-40,y,x+40,y+30,fill="#87CEFA")
+
+        canvas.create_text(x,y+15,text=str(valor))
+
+        y += 40
+
+
+def insertarA():
+
+    try:
+        valor = int(entradaA.get())
+        colaA.encolar(valor)
+        entradaA.delete(0,tk.END)
+        dibujar()
+    except:
+        messagebox.showerror("Error","Ingresa un número")
+
+
+def insertarB():
+
+    try:
+        valor = int(entradaB.get())
+        colaB.encolar(valor)
+        entradaB.delete(0,tk.END)
+        dibujar()
+    except:
+        messagebox.showerror("Error","Ingresa un número")
+
+
+def sumar_colas():
+
+    if (colaA.final-colaA.frente) != (colaB.final-colaB.frente):
+        messagebox.showwarning("Aviso","Las colas deben tener el mismo tamaño")
+        return
+
+    while not colaA.vacia():
+
+        a = colaA.desencolar()
+        b = colaB.desencolar()
+
+        colaR.encolar(a+b)
+
+    dibujar()
+
+
+def reiniciar():
+
+    global colaA,colaB,colaR
+
+    colaA = Cola(MAX)
+    colaB = Cola(MAX)
+    colaR = Cola(MAX)
+
+    dibujar()
+
+
+ventana = tk.Tk()
+ventana.title("Suma de Colas")
+ventana.geometry("650x400")
+
+
+frame = tk.Frame(ventana)
+frame.pack(pady=10)
+
+
+tk.Label(frame,text="Cola A").grid(row=0,column=0)
+entradaA = tk.Entry(frame,width=5)
+entradaA.grid(row=0,column=1)
+tk.Button(frame,text="Insertar",command=insertarA).grid(row=0,column=2)
+
+
+tk.Label(frame,text="Cola B").grid(row=1,column=0)
+entradaB = tk.Entry(frame,width=5)
+entradaB.grid(row=1,column=1)
+tk.Button(frame,text="Insertar",command=insertarB).grid(row=1,column=2)
+
+
+tk.Button(frame,text="Sumar Colas",command=sumar_colas).grid(row=2,column=1,pady=10)
+
+tk.Button(frame,text="Reiniciar",command=reiniciar).grid(row=2,column=2)
+
+
+canvas = tk.Canvas(ventana,width=600,height=250,bg="white")
+canvas.pack()
+
+
+dibujar()
+
+ventana.mainloop()
