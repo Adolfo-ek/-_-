@@ -1,0 +1,24 @@
+import time
+
+class Pila:
+
+    def __init__(self, MAX):
+        self.MAX = MAX
+        self.TOPE = 0
+        self.Datos = [0]*MAX
+
+    def Pila_vacia(self):
+        return self.TOPE == 0
+
+    def Pila_llena(self):
+        return self.TOPE == self.MAX
+
+    def Pone(self, argumento):
+        if not self.Pila_llena():
+            self.Datos[self.TOPE] = argumento
+            self.TOPE = self.TOPE + 1
+
+    def Quita(self):
+        if not self.Pila_vacia():
+            self.TOPE = self.TOPE - 1
+            return self.Datos[self.TOPE]
