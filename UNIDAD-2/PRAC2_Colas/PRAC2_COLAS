@@ -1,0 +1,376 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+import random
+
+# =========================
+# CONFIGURACIÓN
+# =========================
+
+MAX_CLIENTES = 6   # <<< CAMBIA ESTE NUMERO SI QUIERES MAS O MENOS CLIENTES
+
+# =========================
+# COLORES GAMER
+# =========================
+
+BG_MAIN = "#0f172a"
+BG_PANEL = "#111827"
+NEON_CYAN = "#06b6d4"
+NEON_GREEN = "#22c55e"
+NEON_RED = "#ef4444"
+NEON_YELLOW = "#eab308"
+NEON_PURPLE = "#8b5cf6"
+TEXT = "white"
+
+
+# =========================
+# Order
+# =========================
+class Order:
+
+    def __init__(self, code, qtty, customer):
+        self.code = code
+        self.customer = customer
+        self.qtty = qtty
+
+    def print(self):
+        return f"[{self.code}] {self.customer} | Cantidad: {self.qtty}"
+
+
+# =========================
+# Node
+# =========================
+class Node:
+
+    def __init__(self, info):
+        self.info = info
+        self.next = None
+
+
+# =========================
+# Queue
+# =========================
+class Queue:
+
+    def __init__(self):
+        self.top = None
+        self.tail = None
+        self.count = 0
+
+    def enqueue(self, info):
+
+        newNode = Node(info)
+
+        if self.count == 0:
+            self.top = newNode
+            self.tail = newNode
+        else:
+            self.tail.next = newNode
+            self.tail = newNode
+
+        self.count += 1
+
+    def removeAt(self, pos):
+
+        if pos < 0 or pos >= self.count:
+            return None
+
+        if pos == 0:
+            removed = self.top
+            self.top = self.top.next
+
+            if self.top is None:
+                self.tail = None
+
+            self.count -= 1
+            return removed.info
+
+        prev = self.top
+        index = 0
+
+        while index < pos - 1:
+            prev = prev.next
+            index += 1
+
+        removed = prev.next
+        prev.next = removed.next
+
+        if removed == self.tail:
+            self.tail = prev
+
+        self.count -= 1
+        return removed.info
+
+    def clear(self):
+        self.top = None
+        self.tail = None
+        self.count = 0
+
+    def getAll(self):
+
+        node = self.top
+        orders = []
+
+        while node != None:
+            orders.append(node.info)
+            node = node.next
+
+        return orders
+
+    def size(self):
+        return self.count
+
+
+# =========================
+# SISTEMA
+# =========================
+
+queue = Queue()
+
+
+def generar_codigo():
+    return random.randint(1000, 9999)
+
+
+def actualizar_lista():
+
+    listbox.delete(0, tk.END)
+
+    for i, order in enumerate(queue.getAll(), start=1):
+        listbox.insert(tk.END, f"{i}. {order.print()}")
+
+    size_label.config(text=f"Clientes en cola: {queue.size()} / {MAX_CLIENTES}")
+
+
+def actualizar_combo():
+
+    clientes = [order.print() for order in queue.getAll()]
+    combo_clientes["values"] = clientes
+    combo_clientes.set("")
+
+
+# =========================
+# AGREGAR CLIENTE
+# =========================
+
+def agregar():
+
+    if queue.size() >= MAX_CLIENTES:
+        messagebox.showwarning(
+            "Cola llena",
+            f"La cola solo permite {MAX_CLIENTES} clientes."
+        )
+        return
+
+    cliente = entry_cliente.get()
+    cantidad = entry_cantidad.get()
+
+    if cliente == "" or cantidad == "":
+        messagebox.showerror("Error", "Completa los campos")
+        return
+
+    try:
+        cantidad = int(cantidad)
+    except:
+        messagebox.showerror("Error", "Cantidad inválida")
+        return
+
+    codigo = generar_codigo()
+
+    pedido = Order(codigo, cantidad, cliente)
+    queue.enqueue(pedido)
+
+    entry_cliente.delete(0, tk.END)
+    entry_cantidad.delete(0, tk.END)
+
+    actualizar_lista()
+    actualizar_combo()
+
+
+# =========================
+# ATENDER CLIENTE
+# =========================
+
+def atender_cliente():
+
+    index = combo_clientes.current()
+
+    if index == -1:
+        messagebox.showwarning("Error", "Selecciona un cliente")
+        return
+
+    pedido = queue.removeAt(index)
+
+    messagebox.showinfo("Cliente atendido", pedido.print())
+
+    actualizar_lista()
+    actualizar_combo()
+
+
+# =========================
+# ELIMINAR CLIENTE
+# =========================
+
+def eliminar_cliente():
+
+    index = combo_clientes.current()
+
+    if index == -1:
+        messagebox.showwarning("Error", "Selecciona un cliente")
+        return
+
+    pedido = queue.removeAt(index)
+
+    messagebox.showinfo("Cliente eliminado", pedido.print())
+
+    actualizar_lista()
+    actualizar_combo()
+
+
+# =========================
+# ELIMINAR TODO
+# =========================
+
+def eliminar_todo():
+
+    if queue.size() == 0:
+        messagebox.showinfo("Información", "La cola ya está vacía")
+        return
+
+    confirm = messagebox.askyesno(
+        "Confirmar",
+        "¿Seguro que quieres eliminar TODOS los clientes?"
+    )
+
+    if confirm:
+        queue.clear()
+        actualizar_lista()
+        actualizar_combo()
+        messagebox.showinfo("Cola limpia", "Todos los clientes fueron eliminados")
+
+
+# =========================
+# VENTANA
+# =========================
+
+ventana = tk.Tk()
+ventana.title("Sistema de Cola de Clientes")
+ventana.geometry("760x650")
+ventana.configure(bg=BG_MAIN)
+
+titulo = tk.Label(
+    ventana,
+    text="GESTIÓN DE COLA DE CLIENTES",
+    font=("Arial", 22, "bold"),
+    bg=BG_MAIN,
+    fg=NEON_CYAN
+)
+titulo.pack(pady=15)
+
+
+# =========================
+# PANEL INPUT
+# =========================
+
+panel_inputs = tk.Frame(ventana, bg=BG_PANEL, padx=25, pady=20)
+panel_inputs.pack(pady=10)
+
+tk.Label(panel_inputs, text="Cliente", bg=BG_PANEL, fg=TEXT).grid(row=0, column=0)
+
+entry_cliente = tk.Entry(panel_inputs, width=25)
+entry_cliente.grid(row=0, column=1, padx=10)
+
+tk.Label(panel_inputs, text="Cantidad", bg=BG_PANEL, fg=TEXT).grid(row=1, column=0)
+
+entry_cantidad = tk.Entry(panel_inputs, width=25)
+entry_cantidad.grid(row=1, column=1, padx=10)
+
+btn_agregar = tk.Button(
+    panel_inputs,
+    text="AGREGAR CLIENTE",
+    bg=NEON_GREEN,
+    fg="black",
+    width=20,
+    command=agregar
+)
+btn_agregar.grid(row=2, columnspan=2, pady=10)
+
+
+# =========================
+# LISTA
+# =========================
+
+listbox = tk.Listbox(
+    ventana,
+    width=80,
+    height=14,
+    bg="#020617",
+    fg=NEON_CYAN,
+    font=("Consolas", 11),
+    selectbackground=NEON_PURPLE
+)
+listbox.pack(pady=10)
+
+size_label = tk.Label(
+    ventana,
+    text=f"Clientes en cola: 0 / {MAX_CLIENTES}",
+    bg=BG_MAIN,
+    fg=TEXT
+)
+size_label.pack()
+
+
+# =========================
+# COMBO CLIENTES
+# =========================
+
+panel_combo = tk.Frame(ventana, bg=BG_MAIN)
+panel_combo.pack(pady=15)
+
+tk.Label(panel_combo, text="Seleccionar Cliente:", bg=BG_MAIN, fg=TEXT).grid(row=0, column=0, padx=10)
+
+combo_clientes = ttk.Combobox(panel_combo, width=45, state="readonly")
+combo_clientes.grid(row=0, column=1)
+
+
+# =========================
+# BOTONES
+# =========================
+
+panel_botones = tk.Frame(ventana, bg=BG_MAIN)
+panel_botones.pack(pady=20)
+
+btn_atender = tk.Button(
+    panel_botones,
+    text="ATENDER CLIENTE",
+    bg=NEON_CYAN,
+    fg="black",
+    width=18,
+    height=2,
+    command=atender_cliente
+)
+btn_atender.grid(row=0, column=0, padx=10)
+
+btn_eliminar = tk.Button(
+    panel_botones,
+    text="ELIMINAR CLIENTE",
+    bg=NEON_RED,
+    fg="white",
+    width=18,
+    height=2,
+    command=eliminar_cliente
+)
+btn_eliminar.grid(row=0, column=1, padx=10)
+
+btn_eliminar_todo = tk.Button(
+    panel_botones,
+    text="ELIMINAR TODO",
+    bg=NEON_YELLOW,
+    fg="black",
+    width=18,
+    height=2,
+    command=eliminar_todo
+)
+btn_eliminar_todo.grid(row=0, column=2, padx=10)
+
+ventana.mainloop()
