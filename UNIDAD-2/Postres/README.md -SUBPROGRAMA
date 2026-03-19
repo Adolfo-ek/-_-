@@ -1,0 +1,73 @@
+# 🔁 Subprograma: Eliminación de Postres Repetidos
+
+## 📌 Descripción
+
+Este subprograma fue añadido al sistema de gestión de postres con el objetivo de eliminar automáticamente los elementos repetidos dentro del arreglo `POSTRES`.
+
+Se considera que un postre está repetido cuando **tiene el mismo nombre**, sin importar mayúsculas o minúsculas.
+
+---
+
+## ⚙️ Funcionamiento
+
+El subprograma recorre la lista de postres y:
+
+1. Guarda los nombres ya vistos en una estructura tipo `set`
+2. Crea una nueva lista sin duplicados
+3. Sustituye la lista original por la lista filtrada
+
+---
+
+## 🧾 Código
+
+```python
+def eliminar_repetidos():
+    global POSTRES
+    nombres_vistos = set()
+    nuevos_postres = []
+
+    for postre in POSTRES:
+        nombre = postre["nombre"].lower()
+
+        if nombre not in nombres_vistos:
+            nombres_vistos.add(nombre)
+            nuevos_postres.append(postre)
+
+    POSTRES = nuevos_postres
+    print("Postres repetidos eliminados.")
+```
+
+---
+
+## 🛡️ Validaciones y Consideraciones
+
+* Se evita modificar la lista original mientras se recorre
+* Se ignoran diferencias entre mayúsculas y minúsculas
+* Se conserva el **primer registro encontrado**
+* Se eliminan completamente los duplicados junto con sus ingredientes
+
+---
+
+## 🔍 ¿Qué sucede con las listas de ingredientes?
+
+* No se genera ningún error
+* Cada postre mantiene su lista de ingredientes intacta
+* Los duplicados eliminados desaparecen junto con sus listas
+
+---
+
+## ⚠️ Error común evitado
+
+No se eliminan elementos directamente durante el recorrido, ya que eso puede causar:
+
+* Saltos de elementos
+* Resultados incorrectos
+* Comportamiento inesperado
+
+---
+
+## 🧠 Conclusión
+
+El subprograma permite mantener la integridad de los datos eliminando duplicados de forma segura, aplicando buenas prácticas en el manejo de estructuras de datos en Python.
+
+---
