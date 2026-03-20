@@ -1,0 +1,340 @@
+import tkinter as tk
+from tkinter import messagebox
+
+MAX = 8
+pila = []
+
+variables = {
+"Z":"",
+"T":"",
+"U":"",
+"P":""
+}
+
+def dibujar_pila():
+
+    canvas.delete("all")
+
+    base = 350
+    x1 = 180
+    x2 = 320
+    altura = 40
+
+    canvas.create_rectangle(x1-15,base+10,x2+15,base-(MAX*altura)-10,width=3,outline="#34495e")
+
+    for i in range(MAX):
+
+        y1 = base-(i*altura)
+        y2 = y1-altura
+
+        canvas.create_rectangle(x1,y1,x2,y2,outline="#d0d3d4")
+        canvas.create_text(x1-25,(y1+y2)/2,text=str(i+1),fill="#7f8c8d")
+
+    for i,valor in enumerate(pila):
+
+        y1 = base-(i*altura)
+        y2 = y1-altura
+
+        canvas.create_rectangle(
+        x1,y1,x2,y2,
+        fill="#3498db",
+        outline="#1f618d",
+        width=2
+        )
+
+        canvas.create_text(
+        (x1+x2)/2,
+        (y1+y2)/2,
+        text=valor,
+        fill="white",
+        font=("Arial",12,"bold")
+        )
+
+    if len(pila)>0:
+
+        y = base-((len(pila)-1)*altura)-20
+
+        canvas.create_text(
+        x2+60,
+        y,
+        text="TOPE",
+        fill="red",
+        font=("Arial",11,"bold")
+        )
+
+        canvas.create_line(
+        x2+10,
+        y,
+        x2+45,
+        y,
+        arrow=tk.LAST,
+        width=2,
+        fill="red"
+        )
+
+    label_tope.config(text=f"TOPE = {len(pila)}")
+    actualizar_arreglo()
+
+
+def actualizar_arreglo():
+
+    arreglo = [""] * MAX
+
+    for i,v in enumerate(pila):
+        arreglo[i] = v
+
+    texto = ""
+
+    for v in arreglo:
+        if v == "":
+            texto += "[   ] "
+        else:
+            texto += f"[ {v} ] "
+
+    label_arreglo.config(text=texto)
+
+
+def insertar():
+
+    valor = entrada.get().strip()
+
+    if valor == "":
+        messagebox.showwarning("Aviso","Ingresa un valor")
+        return
+
+    if len(pila) >= MAX:
+
+        messagebox.showerror("Error","Overflow: pila llena")
+        historial.insert(tk.END,"ERROR → Overflow")
+        return
+
+    pila.append(valor)
+
+    historial.insert(tk.END,f"Insertar → {valor}")
+
+    entrada.delete(0,tk.END)
+
+    dibujar_pila()
+
+
+def eliminar():
+
+    var = entrada.get().strip().upper()
+
+    if var == "":
+        messagebox.showwarning("Aviso","Ingresa la variable (Z,T,U,P)")
+        return
+
+    if len(pila) == 0:
+
+        messagebox.showerror("Error","Underflow: pila vacía")
+        historial.insert(tk.END,f"ERROR → Underflow al intentar guardar en {var}")
+        return
+
+    eliminado = pila.pop()
+
+    variables[var] = eliminado
+
+    historial.insert(tk.END,f"{var} = {eliminado}")
+
+    actualizar_variables()
+    dibujar_pila()
+
+
+def eliminar_temporal(valor):
+
+    if pila and pila[-1] == valor:
+
+        pila.pop()
+
+        historial.insert(tk.END,f"Auto eliminación → {valor}")
+
+        dibujar_pila()
+
+
+def eliminar_valor():
+
+    valor = entrada.get().strip()
+
+    if valor == "":
+        messagebox.showwarning("Aviso","Ingresa el valor que deseas eliminar")
+        return
+    if valor not in pila:
+
+        historial.insert(tk.END,f"{valor} no estaba en pila → inserción temporal")
+
+        pila.append(valor)
+
+        dibujar_pila()
+
+        ventana.after(2000, lambda: eliminar_temporal(valor))
+
+        return
+
+    pila_aux = []
+
+    while pila and pila[-1] != valor:
+        pila_aux.append(pila.pop())
+
+    if pila and pila[-1] == valor:
+        pila.pop()
+
+    while pila_aux:
+        pila.append(pila_aux.pop())
+
+    historial.insert(tk.END,f"Eliminar valor específico → {valor}")
+
+    dibujar_pila()
+
+
+def actualizar_variables():
+
+    texto = ""
+
+    for v in variables:
+        texto += f"{v} = {variables[v]}\n"
+
+    panel_variables.config(text=texto)
+
+
+def vaciar():
+
+    pila.clear()
+
+    historial.insert(tk.END,"Pila vaciada")
+
+    dibujar_pila()
+
+
+ventana = tk.Tk()
+ventana.title("Simulación Profesional de Pila")
+ventana.geometry("750x650")
+ventana.configure(bg="#ecf0f1")
+
+titulo = tk.Label(
+ventana,
+text="Simulación Visual de PILA",
+font=("Arial",20,"bold"),
+bg="#ecf0f1",
+fg="#2c3e50"
+)
+titulo.pack(pady=10)
+
+frame = tk.Frame(ventana,bg="#ecf0f1")
+frame.pack()
+
+tk.Label(frame,text="Elemento / Variable:",bg="#ecf0f1").grid(row=0,column=0,padx=5)
+
+entrada = tk.Entry(frame,width=10,font=("Arial",11))
+entrada.grid(row=0,column=1,padx=5)
+
+tk.Button(
+frame,
+text="Insertar",
+bg="#27ae60",
+fg="white",
+width=10,
+command=insertar
+).grid(row=0,column=2,padx=5)
+
+tk.Button(
+frame,
+text="Eliminar",
+bg="#c0392b",
+fg="white",
+width=10,
+command=eliminar
+).grid(row=0,column=3,padx=5)
+
+tk.Button(
+frame,
+text="Vaciar pila",
+width=12,
+command=vaciar
+).grid(row=0,column=4,padx=5)
+
+tk.Button(
+frame,
+text="Eliminar valor",
+bg="#8e44ad",
+fg="white",
+width=12,
+command=eliminar_valor
+).grid(row=0,column=5,padx=5)
+
+canvas = tk.Canvas(
+ventana,
+width=450,
+height=380,
+bg="white",
+bd=2,
+relief="ridge"
+)
+canvas.pack(pady=15)
+
+label_tope = tk.Label(
+ventana,
+text="TOPE = 0",
+font=("Arial",12,"bold"),
+bg="#ecf0f1"
+)
+label_tope.pack()
+
+tk.Label(
+ventana,
+text="Arreglo interno de la pila:",
+font=("Arial",11,"bold"),
+bg="#ecf0f1"
+).pack(pady=(10,0))
+
+label_arreglo = tk.Label(
+ventana,
+text="",
+font=("Courier",14),
+bg="white",
+width=40,
+relief="solid"
+)
+label_arreglo.pack(pady=5)
+
+frame_hist = tk.Frame(ventana,bg="#ecf0f1")
+frame_hist.pack(side="left",padx=20)
+
+tk.Label(
+frame_hist,
+text="Historial",
+font=("Arial",11,"bold"),
+bg="#ecf0f1"
+).pack()
+
+historial = tk.Listbox(
+frame_hist,
+width=35,
+height=10
+)
+historial.pack()
+
+frame_var = tk.Frame(ventana,bg="#ecf0f1")
+frame_var.pack(side="right",padx=20)
+
+tk.Label(
+frame_var,
+text="Variables",
+font=("Arial",11,"bold"),
+bg="#ecf0f1"
+).pack()
+
+panel_variables = tk.Label(
+frame_var,
+text="Z =\nT =\nU =\nP =",
+font=("Arial",12),
+bg="white",
+width=12,
+height=6,
+relief="solid"
+)
+panel_variables.pack()
+
+dibujar_pila()
+
+ventana.mainloop()
