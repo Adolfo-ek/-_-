@@ -1,0 +1,89 @@
+# ==============================
+# MyGraph Library
+# ACT Clase - GRAFO
+# ==============================
+
+class MyGraph:
+    def __init__(self):
+        self.graph = {}
+
+    # Agregar nodo
+    def add_vertex(self, vertex):
+        if vertex not in self.graph:
+            self.graph[vertex] = []
+
+    # Agregar arista (no dirigido)
+    def add_edge(self, v1, v2):
+        if v1 not in self.graph:
+            self.add_vertex(v1)
+        if v2 not in self.graph:
+            self.add_vertex(v2)
+
+        self.graph[v1].append(v2)
+        self.graph[v2].append(v1)
+
+    # Eliminar arista
+    def remove_edge(self, v1, v2):
+        if v1 in self.graph and v2 in self.graph:
+            if v2 in self.graph[v1]:
+                self.graph[v1].remove(v2)
+            if v1 in self.graph[v2]:
+                self.graph[v2].remove(v1)
+
+    # Eliminar nodo
+    def remove_vertex(self, vertex):
+        if vertex in self.graph:
+            for neighbor in self.graph[vertex]:
+                self.graph[neighbor].remove(vertex)
+            del self.graph[vertex]
+
+    # Mostrar grafo
+    def display(self):
+        for vertex in self.graph:
+            print(vertex, "->", self.graph[vertex])
+
+    # Búsqueda en anchura (BFS)
+    def bfs(self, start):
+        visited = set()
+        queue = [start]
+
+        while queue:
+            vertex = queue.pop(0)
+
+            if vertex not in visited:
+                print(vertex, end=" ")
+                visited.add(vertex)
+                queue.extend(self.graph[vertex])
+
+    # Búsqueda en profundidad (DFS)
+    def dfs(self, start, visited=None):
+        if visited is None:
+            visited = set()
+
+        print(start, end=" ")
+        visited.add(start)
+
+        for neighbor in self.graph[start]:
+            if neighbor not in visited:
+                self.dfs(neighbor, visited)
+
+
+# ==============================
+# Ejemplo de uso
+# ==============================
+if __name__ == "__main__":
+    g = MyGraph()
+
+    g.add_edge("A", "B")
+    g.add_edge("A", "C")
+    g.add_edge("B", "D")
+    g.add_edge("C", "E")
+
+    print("Grafo:")
+    g.display()
+
+    print("\nBFS desde A:")
+    g.bfs("A")
+
+    print("\n\nDFS desde A:")
+    g.dfs("A")
