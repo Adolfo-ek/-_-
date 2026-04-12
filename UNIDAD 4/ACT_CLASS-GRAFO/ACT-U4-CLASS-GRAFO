@@ -1,0 +1,120 @@
+# ==========================================
+# MyGraph - Implementación de Grafos
+# ==========================================
+
+from collections import deque
+
+
+class MyGraph:
+    def __init__(self):
+        """
+        Inicializa el grafo como un diccionario
+        (lista de adyacencia)
+        """
+        self.graph = {}
+
+    # =========================
+    # AGREGAR VÉRTICE
+    # =========================
+    def add_vertex(self, vertex):
+        if vertex not in self.graph:
+            self.graph[vertex] = []
+
+    # =========================
+    # AGREGAR ARISTA
+    # =========================
+    def add_edge(self, v1, v2):
+        self.add_vertex(v1)
+        self.add_vertex(v2)
+
+        if v2 not in self.graph[v1]:
+            self.graph[v1].append(v2)
+        if v1 not in self.graph[v2]:
+            self.graph[v2].append(v1)
+
+    # =========================
+    # ELIMINAR ARISTA
+    # =========================
+    def remove_edge(self, v1, v2):
+        if v1 in self.graph and v2 in self.graph:
+            if v2 in self.graph[v1]:
+                self.graph[v1].remove(v2)
+            if v1 in self.graph[v2]:
+                self.graph[v2].remove(v1)
+
+    # =========================
+    # ELIMINAR VÉRTICE
+    # =========================
+    def remove_vertex(self, vertex):
+        if vertex in self.graph:
+            # Eliminar conexiones
+            for vecino in self.graph[vertex]:
+                self.graph[vecino].remove(vertex)
+
+            # Eliminar nodo
+            del self.graph[vertex]
+
+    # =========================
+    # MOSTRAR GRAFO
+    # =========================
+    def display(self):
+        print("\n===== GRAFO =====")
+        for vertex in self.graph:
+            print(f"{vertex} -> {self.graph[vertex]}")
+
+    # =========================
+    # BFS (Anchura)
+    # =========================
+    def bfs(self, start):
+        visitados = set()
+        cola = deque([start])
+        recorrido = []
+
+        while cola:
+            nodo = cola.popleft()
+
+            if nodo not in visitados:
+                visitados.add(nodo)
+                recorrido.append(nodo)
+
+                for vecino in self.graph[nodo]:
+                    if vecino not in visitados:
+                        cola.append(vecino)
+
+        return recorrido
+
+    # =========================
+    # DFS (Profundidad)
+    # =========================
+    def dfs(self, start):
+        visitados = set()
+        recorrido = []
+
+        def _dfs(nodo):
+            visitados.add(nodo)
+            recorrido.append(nodo)
+
+            for vecino in self.graph[nodo]:
+                if vecino not in visitados:
+                    _dfs(vecino)
+
+        _dfs(start)
+        return recorrido
+
+
+# ==========================================
+# EJEMPLO DE USO
+# ==========================================
+
+if __name__ == "__main__":
+    g = MyGraph()
+
+    g.add_edge("A", "B")
+    g.add_edge("A", "C")
+    g.add_edge("B", "D")
+    g.add_edge("C", "E")
+
+    g.display()
+
+    print("\nBFS desde A:", g.bfs("A"))
+    print("DFS desde A:", g.dfs("A"))
