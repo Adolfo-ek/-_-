@@ -1,0 +1,60 @@
+# ==========================================
+# ALGORITMO DE WARSHALL
+# ==========================================
+
+class Grafo:
+    def __init__(self, matriz):
+        """
+        Inicializa el grafo con una matriz de adyacencia.
+        1 = existe conexión
+        0 = no existe conexión
+        """
+        self.matriz = matriz
+        self.n = len(matriz)
+
+    def warshall(self):
+        """
+        Implementación del algoritmo de Warshall.
+        Calcula la matriz de alcanzabilidad (cierre transitivo).
+        """
+        # Copia de la matriz original
+        alcance = [fila[:] for fila in self.matriz]
+
+        for k in range(self.n):
+            for i in range(self.n):
+                for j in range(self.n):
+                    # Si existe camino indirecto, se marca como alcanzable
+                    alcance[i][j] = alcance[i][j] or (alcance[i][k] and alcance[k][j])
+
+        return alcance
+
+    def mostrar_matriz(self, matriz):
+        """
+        Muestra una matriz de forma ordenada
+        """
+        for fila in matriz:
+            print(fila)
+
+
+# =========================
+# PROGRAMA PRINCIPAL
+# =========================
+if __name__ == "__main__":
+
+    # Grafo de ejemplo (matriz de adyacencia)
+    grafo = [
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0]
+    ]
+
+    g = Grafo(grafo)
+
+    print("Matriz de adyacencia original:")
+    g.mostrar_matriz(g.matriz)
+
+    resultado = g.warshall()
+
+    print("\nMatriz de alcanzabilidad (Warshall):")
+    g.mostrar_matriz(resultado)
