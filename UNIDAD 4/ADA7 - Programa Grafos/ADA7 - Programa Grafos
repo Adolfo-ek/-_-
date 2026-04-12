@@ -1,0 +1,157 @@
+# ==========================================
+# PROYECTO: GRAFOS - ESTADOS DE MÉXICO
+# ==========================================
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+
+class Grafo:
+    def __init__(self):
+        """
+        Inicializa el grafo como un diccionario de adyacencia
+        """
+        self.grafo = {}
+
+    def agregar_arista(self, origen, destino, costo):
+        """
+        Agrega una conexión bidireccional entre estados
+        """
+        if origen not in self.grafo:
+            self.grafo[origen] = {}
+        if destino not in self.grafo:
+            self.grafo[destino] = {}
+
+        self.grafo[origen][destino] = costo
+        self.grafo[destino][origen] = costo
+
+    def mostrar_grafo(self):
+        """
+        Muestra los estados y sus relaciones
+        """
+        print("\n===== ESTADOS Y CONEXIONES =====")
+        for estado, conexiones in self.grafo.items():
+            print(f"{estado}:")
+            for destino, costo in conexiones.items():
+                print(f"   -> {destino} (Costo: {costo})")
+
+    def calcular_costo(self, recorrido):
+        """
+        Calcula el costo total de un recorrido
+        """
+        costo_total = 0
+
+        for i in range(len(recorrido) - 1):
+            origen = recorrido[i]
+            destino = recorrido[i + 1]
+
+            if destino in self.grafo[origen]:
+                costo_total += self.grafo[origen][destino]
+            else:
+                print("⚠️ Ruta inválida detectada.")
+                return None
+
+        return costo_total
+
+    def recorrido_sin_repetir(self, inicio):
+        """
+        Recorrido tipo DFS sin repetir nodos
+        """
+        visitados = set()
+        recorrido = []
+
+        def dfs(nodo):
+            visitados.add(nodo)
+            recorrido.append(nodo)
+
+            for vecino in self.grafo[nodo]:
+                if vecino not in visitados:
+                    dfs(vecino)
+
+        dfs(inicio)
+        return recorrido
+
+    def recorrido_con_repeticion(self):
+        """
+        Recorrido válido donde se repite al menos un nodo
+        """
+        return [
+            "Yucatán",
+            "Campeche",
+            "Tabasco",
+            "Veracruz",
+            "Puebla",
+            "Oaxaca",
+            "Chiapas",
+            "Oaxaca"  # repetición
+        ]
+
+    def dibujar_grafo(self):
+        """
+        Dibuja el grafo con NetworkX
+        """
+        G = nx.Graph()
+
+        for origen in self.grafo:
+            for destino, costo in self.grafo[origen].items():
+                G.add_edge(origen, destino, weight=costo)
+
+        pos = nx.spring_layout(G)
+        etiquetas = nx.get_edge_attributes(G, 'weight')
+
+        nx.draw(G, pos, with_labels=True, node_size=2000)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=etiquetas)
+
+        plt.title("Grafo de Estados de México")
+        plt.show()
+
+
+# ==========================================
+# PROGRAMA PRINCIPAL
+# ==========================================
+
+def main():
+    g = Grafo()
+
+    # Definición de 7 estados
+    g.agregar_arista("Yucatán", "Campeche", 200)
+    g.agregar_arista("Yucatán", "Quintana Roo", 180)
+    g.agregar_arista("Campeche", "Tabasco", 250)
+    g.agregar_arista("Tabasco", "Veracruz", 300)
+    g.agregar_arista("Veracruz", "Puebla", 220)
+    g.agregar_arista("Puebla", "Oaxaca", 270)
+    g.agregar_arista("Oaxaca", "Chiapas", 320)
+
+    # Mostrar grafo
+    g.mostrar_grafo()
+
+    # =========================
+    # INCISO A
+    # =========================
+    recorrido_a = g.recorrido_sin_repetir("Yucatán")
+    costo_a = g.calcular_costo(recorrido_a)
+
+    print("\n===== INCISO A =====")
+    print("Recorrido sin repetir:")
+    print(recorrido_a)
+    print("Costo total:", costo_a)
+
+    # =========================
+    # INCISO B
+    # =========================
+    recorrido_b = g.recorrido_con_repeticion()
+    costo_b = g.calcular_costo(recorrido_b)
+
+    print("\n===== INCISO B =====")
+    print("Recorrido con repetición:")
+    print(recorrido_b)
+    print("Costo total:", costo_b)
+
+    # =========================
+    # DIBUJO DEL GRAFO
+    # =========================
+    g.dibujar_grafo()
+
+
+if __name__ == "__main__":
+    main()
