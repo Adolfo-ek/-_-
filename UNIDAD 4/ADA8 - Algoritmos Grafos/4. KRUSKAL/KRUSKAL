@@ -1,0 +1,24 @@
+class UnionFind:
+    def __init__(self, n):
+        self.padre = list(range(n))
+
+    def find(self, x):
+        if self.padre[x] != x:
+            self.padre[x] = self.find(self.padre[x])
+        return self.padre[x]
+
+    def union(self, x, y):
+        self.padre[self.find(y)] = self.find(x)
+
+
+def kruskal(n, aristas):
+    aristas.sort(key=lambda x: x[2])
+    uf = UnionFind(n)
+    mst = []
+
+    for u, v, peso in aristas:
+        if uf.find(u) != uf.find(v):
+            uf.union(u, v)
+            mst.append((u, v, peso))
+
+    return mst
