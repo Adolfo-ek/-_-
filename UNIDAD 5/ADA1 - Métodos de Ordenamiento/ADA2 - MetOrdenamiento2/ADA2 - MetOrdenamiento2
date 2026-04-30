@@ -1,0 +1,424 @@
+"""
+==================================================
+   ORDENADOR VISUAL DE DATOS - Tkinter Edition
+   Bubble | Selection | Insertion | Merge Sort
+==================================================
+"""
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+import random
+import time
+
+# ==================================================
+# ESTILO VISUAL
+# ==================================================
+FONDO = "#101820"
+PANEL = "#1b2631"
+CAJA = "#243447"
+AZUL = "#00c2ff"
+VERDE = "#2ecc71"
+ROJO = "#ff5c5c"
+TEXTO = "#ecf0f1"
+GRIS = "#95a5a6"
+
+FUENTE = ("Consolas", 10)
+FUENTE_T = ("Consolas", 16, "bold")
+FUENTE_B = ("Consolas", 10, "bold")
+
+# ==================================================
+# ALGORITMOS
+# ==================================================
+
+def bubble_sort(lista):
+    arr = lista[:]
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr
+
+def selection_sort(lista):
+    arr = lista[:]
+    for i in range(len(arr)):
+        minimo = i
+        for j in range(i+1, len(arr)):
+            if arr[j] < arr[minimo]:
+                minimo = j
+        arr[i], arr[minimo] = arr[minimo], arr[i]
+    return arr
+
+def insertion_sort(lista):
+    arr = lista[:]
+    for i in range(1, len(arr)):
+        clave = arr[i]
+        j = i - 1
+        while j >= 0 and clave < arr[j]:
+            arr[j+1] = arr[j]
+            j -= 1
+        arr[j+1] = clave
+    return arr
+
+def merge_sort(lista):
+    if len(lista) <= 1:
+        return lista
+
+    mitad = len(lista)//2
+    izq = merge_sort(lista[:mitad])
+    der = merge_sort(lista[mitad:])
+
+    return fusionar(izq, der)
+
+def fusionar(a, b):
+    resultado = []
+    i = j = 0
+
+    while i < len(a) and j < len(b):
+        if a[i] < b[j]:
+            resultado.append(a[i])
+            i += 1
+        else:
+            resultado.append(b[j])
+            j += 1
+
+    resultado.extend(a[i:])
+    resultado.extend(b[j:])
+    return resultado
+
+METODOS = {
+    "Bubble Sort": bubble_sort,
+    "Selection Sort": selection_sort,
+    "Insertion Sort": insertion_sort,
+    "Merge Sort": merge_sort
+}
+
+INFO = {
+    "Bubble Sort": "Intercambia vecinos hasta ordenar.",
+    "Selection Sort": "Busca el menor y lo coloca.",
+    "Insertion Sort": "Inserta cada valor en posición.",
+    "Merge Sort": "Divide y combina ordenadamente."
+}
+
+# ==================================================
+# APP
+# ==================================================
+
+class OrdenadorApp(tk.Tk):
+
+    def __init__(self):
+        super().__init__()
+
+        self.title("Ordenador Visual de Datos")
+        self.geometry("950x650")
+        self.config(bg=FONDO)
+        self.resizable(False, False)
+
+        self.metodo = tk.StringVar(value="Bubble Sort")
+
+        self.crear_interfaz()
+
+    # ----------------------------------------------
+
+    def crear_interfaz(self):
+
+        titulo = tk.Label(
+            self,
+            text="ORDENADOR VISUAL DE DATOS",
+            bg=FONDO,
+            fg=AZUL,
+            font=FUENTE_T
+        )
+        titulo.pack(pady=15)
+
+        # PANEL PRINCIPAL
+        cont = tk.Frame(self, bg=FONDO)
+        cont.pack(fill="both", expand=True, padx=15)
+
+        izq = tk.Frame(cont, bg=FONDO)
+        izq.pack(side="left", fill="y", padx=(0,10))
+
+        der = tk.Frame(cont, bg=FONDO)
+        der.pack(side="left", fill="both", expand=True)
+
+        self.panel_entrada(izq)
+        self.panel_metodos(izq)
+        self.panel_resultados(der)
+        self.panel_botones()
+
+    # ----------------------------------------------
+
+    def caja_panel(self, parent, titulo):
+
+        marco = tk.Frame(parent, bg=PANEL, bd=1)
+        marco.pack(fill="x", pady=8)
+
+        lbl = tk.Label(
+            marco,
+            text=titulo,
+            bg=PANEL,
+            fg=AZUL,
+            font=FUENTE_B
+        )
+        lbl.pack(anchor="w", padx=10, pady=8)
+
+        cuerpo = tk.Frame(marco, bg=PANEL)
+        cuerpo.pack(fill="x", padx=10, pady=(0,10))
+
+        return cuerpo
+
+    # ----------------------------------------------
+
+    def panel_entrada(self, parent):
+
+        box = self.caja_panel(parent, "ENTRADA DE DATOS")
+
+        tk.Label(box, text="Cantidad:", bg=PANEL, fg=TEXTO).pack(anchor="w")
+
+        self.cantidad = tk.Entry(
+            box, bg=CAJA, fg=TEXTO, insertbackground=TEXTO,
+            font=FUENTE, width=10
+        )
+        self.cantidad.pack(anchor="w", pady=4)
+        self.cantidad.insert(0, "10")
+
+        tk.Button(
+            box, text="Generar Aleatorio",
+            command=self.generar,
+            bg=CAJA, fg=AZUL
+        ).pack(anchor="w", pady=5)
+
+        tk.Label(
+            box,
+            text="Números separados por espacio:",
+            bg=PANEL, fg=TEXTO
+        ).pack(anchor="w", pady=(10,0))
+
+        self.texto = tk.Text(
+            box, height=5, width=30,
+            bg=CAJA, fg=TEXTO,
+            font=FUENTE
+        )
+        self.texto.pack()
+
+    # ----------------------------------------------
+
+    def panel_metodos(self, parent):
+
+        box = self.caja_panel(parent, "ALGORITMOS")
+
+        for nombre in METODOS:
+            tk.Radiobutton(
+                box,
+                text=nombre,
+                variable=self.metodo,
+                value=nombre,
+                command=self.actualizar_info,
+                bg=PANEL,
+                fg=TEXTO,
+                selectcolor=CAJA,
+                activebackground=PANEL
+            ).pack(anchor="w")
+
+        self.info = tk.Label(
+            box,
+            text="",
+            justify="left",
+            bg=PANEL,
+            fg=GRIS,
+            font=("Consolas",9)
+        )
+        self.info.pack(anchor="w", pady=10)
+
+        self.actualizar_info()
+
+    # ----------------------------------------------
+
+    def panel_resultados(self, parent):
+
+        # estadísticas
+        top = tk.Frame(parent, bg=FONDO)
+        top.pack(fill="x")
+
+        self.lbl_tiempo = self.stat(top, "TIEMPO")
+        self.lbl_total = self.stat(top, "ELEMENTOS")
+        self.lbl_tipo = self.stat(top, "MÉTODO")
+
+        # original
+        box1 = self.caja_panel(parent, "ARREGLO ORIGINAL")
+
+        self.original = tk.Text(
+            box1, height=5, bg=CAJA, fg=TEXTO,
+            font=FUENTE
+        )
+        self.original.pack(fill="x")
+
+        # ordenado
+        box2 = self.caja_panel(parent, "ARREGLO ORDENADO")
+
+        self.ordenado = tk.Text(
+            box2, height=5, bg=CAJA, fg=VERDE,
+            font=FUENTE
+        )
+        self.ordenado.pack(fill="x")
+
+        # log
+        box3 = self.caja_panel(parent, "BITÁCORA")
+
+        self.log = tk.Text(
+            box3, height=8, bg=CAJA,
+            fg=GRIS, font=("Consolas",9)
+        )
+        self.log.pack(fill="x")
+
+    # ----------------------------------------------
+
+    def stat(self, parent, titulo):
+
+        box = tk.Frame(parent, bg=PANEL, width=150, height=70)
+        box.pack(side="left", expand=True, fill="both", padx=5)
+
+        tk.Label(
+            box, text=titulo,
+            bg=PANEL, fg=GRIS
+        ).pack()
+
+        lbl = tk.Label(
+            box, text="---",
+            bg=PANEL, fg=AZUL,
+            font=FUENTE_B
+        )
+        lbl.pack(pady=8)
+
+        return lbl
+
+    # ----------------------------------------------
+
+    def panel_botones(self):
+
+        barra = tk.Frame(self, bg=FONDO)
+        barra.pack(fill="x", pady=15)
+
+        tk.Button(
+            barra,
+            text="ORDENAR",
+            command=self.ordenar,
+            bg=CAJA,
+            fg=AZUL,
+            width=15
+        ).pack(side="left", padx=15)
+
+        tk.Button(
+            barra,
+            text="LIMPIAR",
+            command=self.limpiar,
+            bg=CAJA,
+            fg=TEXTO,
+            width=15
+        ).pack(side="left")
+
+        tk.Button(
+            barra,
+            text="SALIR",
+            command=self.destroy,
+            bg=CAJA,
+            fg=ROJO,
+            width=15
+        ).pack(side="right", padx=15)
+
+    # ==================================================
+    # FUNCIONES
+    # ==================================================
+
+    def actualizar_info(self):
+        nombre = self.metodo.get()
+        self.info.config(text=INFO[nombre])
+
+    def generar(self):
+        try:
+            n = int(self.cantidad.get())
+            if n <= 0 or n > 300:
+                raise ValueError
+        except:
+            messagebox.showerror("Error", "Cantidad inválida.")
+            return
+
+        datos = [random.randint(-500, 500) for _ in range(n)]
+
+        self.texto.delete("1.0", "end")
+        self.texto.insert("1.0", " ".join(map(str, datos)))
+
+        self.escribir_log(f"Se generaron {n} números.")
+
+    def leer_numeros(self):
+
+        txt = self.texto.get("1.0", "end").strip()
+
+        if not txt:
+            return None
+
+        try:
+            nums = list(map(int, txt.replace(",", " ").split()))
+            return nums
+        except:
+            return None
+
+    def ordenar(self):
+
+        datos = self.leer_numeros()
+
+        if datos is None:
+            messagebox.showerror("Error", "Datos inválidos.")
+            return
+
+        metodo = self.metodo.get()
+        funcion = METODOS[metodo]
+
+        inicio = time.perf_counter()
+        resultado = funcion(datos)
+        fin = time.perf_counter()
+
+        ms = (fin - inicio) * 1000
+
+        self.colocar(self.original, datos, TEXTO)
+        self.colocar(self.ordenado, resultado, VERDE)
+
+        self.lbl_tiempo.config(text=f"{ms:.3f} ms")
+        self.lbl_total.config(text=str(len(datos)))
+        self.lbl_tipo.config(text=metodo.split()[0])
+
+        self.escribir_log(
+            f"{metodo} aplicado a {len(datos)} datos en {ms:.3f} ms"
+        )
+
+    def limpiar(self):
+
+        self.texto.delete("1.0", "end")
+        self.original.delete("1.0", "end")
+        self.ordenado.delete("1.0", "end")
+        self.log.delete("1.0", "end")
+
+        self.lbl_tiempo.config(text="---")
+        self.lbl_total.config(text="---")
+        self.lbl_tipo.config(text="---")
+
+    def colocar(self, caja, datos, color):
+
+        caja.delete("1.0", "end")
+        caja.config(fg=color)
+        caja.insert("1.0", " ".join(map(str, datos)))
+
+    def escribir_log(self, texto):
+
+        hora = time.strftime("%H:%M:%S")
+        self.log.insert("end", f"[{hora}] {texto}\n")
+        self.log.see("end")
+
+
+# ==================================================
+# MAIN
+# ==================================================
+
+if __name__ == "__main__":
+    app = OrdenadorApp()
+    app.mainloop()
