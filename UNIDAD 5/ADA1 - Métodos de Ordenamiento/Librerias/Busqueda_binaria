@@ -1,0 +1,127 @@
+"""
+Librería de Búsqueda Binaria
+Descripción: Implementación de búsqueda binaria en diferentes variantes
+"""
+
+from typing import List, Any, Optional
+from numbers import Number
+
+
+class BusquedaBinaria:
+
+    @staticmethod
+    def buscar_iterativo(arreglo: List[Any], objetivo: Any) -> Optional[int]:
+
+        izquierda = 0
+        derecha = len(arreglo) - 1
+
+        while izquierda <= derecha:
+
+            medio = (izquierda + derecha) // 2
+
+            if arreglo[medio] == objetivo:
+                return medio
+
+            elif arreglo[medio] < objetivo:
+                izquierda = medio + 1
+
+            else:
+                derecha = medio - 1
+
+        return None
+
+    @staticmethod
+    def buscar_recursivo(
+        arreglo: List[Any],
+        objetivo: Any,
+        izquierda: int = 0,
+        derecha: int = None
+    ) -> Optional[int]:
+
+        if derecha is None:
+            derecha = len(arreglo) - 1
+
+        if izquierda > derecha:
+            return None
+
+        medio = (izquierda + derecha) // 2
+
+        if arreglo[medio] == objetivo:
+            return medio
+
+        elif arreglo[medio] < objetivo:
+            return BusquedaBinaria.buscar_recursivo(
+                arreglo,
+                objetivo,
+                medio + 1,
+                derecha
+            )
+
+        else:
+            return BusquedaBinaria.buscar_recursivo(
+                arreglo,
+                objetivo,
+                izquierda,
+                medio - 1
+            )
+
+    @staticmethod
+    def buscar_todos(arreglo: List[Any], objetivo: Any) -> List[int]:
+
+        indice = BusquedaBinaria.buscar_iterativo(arreglo, objetivo)
+
+        if indice is None:
+            return []
+
+        indices = [indice]
+
+        i = indice - 1
+
+        while i >= 0 and arreglo[i] == objetivo:
+            indices.append(i)
+            i -= 1
+
+        i = indice + 1
+
+        while i < len(arreglo) and arreglo[i] == objetivo:
+            indices.append(i)
+            i += 1
+
+        return sorted(indices)
+
+    @staticmethod
+    def buscar_mas_cercano(
+        arreglo: List[Number],
+        objetivo: Number
+    ):
+
+        if not arreglo:
+            return None
+
+        izquierda = 0
+        derecha = len(arreglo) - 1
+
+        if objetivo <= arreglo[izquierda]:
+            return arreglo[izquierda]
+
+        if objetivo >= arreglo[derecha]:
+            return arreglo[derecha]
+
+        while izquierda <= derecha:
+
+            medio = (izquierda + derecha) // 2
+
+            if arreglo[medio] == objetivo:
+                return arreglo[medio]
+
+            elif arreglo[medio] < objetivo:
+                izquierda = medio + 1
+
+            else:
+                derecha = medio - 1
+
+        if abs(arreglo[izquierda] - objetivo) < abs(arreglo[derecha] - objetivo):
+            return arreglo[izquierda]
+
+        else:
+            return arreglo[derecha]
