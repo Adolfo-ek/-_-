@@ -1,0 +1,133 @@
+from collections import Counter
+
+from utilidades.historial import (
+    leer_historial
+)
+
+
+# =========================================
+# OBTENER ESTADISTICAS
+# =========================================
+
+def obtener_estadisticas():
+
+    historial = leer_historial()
+
+    # =====================================
+    # SI NO HAY DATOS
+    # =====================================
+
+    if not historial:
+
+        return {
+
+            "total": 0,
+
+            "internos": 0,
+
+            "externos": 0,
+
+            "mas_usado": "Ninguno",
+
+            "mas_rapido": "Ninguno",
+
+            "promedio": 0
+        }
+
+    # =====================================
+    # TOTAL
+    # =====================================
+
+    total = len(
+        historial
+    )
+
+    # =====================================
+    # INTERNOS / EXTERNOS
+    # =====================================
+
+    internos = len([
+
+        fila for fila in historial
+
+        if fila[1] == "INTERNO"
+    ])
+
+    externos = len([
+
+        fila for fila in historial
+
+        if fila[1] == "EXTERNO"
+    ])
+
+    # =====================================
+    # MAS USADO
+    # =====================================
+
+    algoritmos = [
+
+        fila[2]
+
+        for fila in historial
+    ]
+
+    contador = Counter(
+        algoritmos
+    )
+
+    mas_usado = contador.most_common(1)[0][0]
+
+    # =====================================
+    # MAS RAPIDO
+    # =====================================
+
+    mejor_tiempo = float("inf")
+
+    mas_rapido = "Ninguno"
+
+    tiempos = []
+
+    for fila in historial:
+
+        algoritmo = fila[2]
+
+        tiempo = float(
+            fila[4]
+        )
+
+        tiempos.append(
+            tiempo
+        )
+
+        if tiempo < mejor_tiempo:
+
+            mejor_tiempo = tiempo
+
+            mas_rapido = algoritmo
+
+    # =====================================
+    # PROMEDIO
+    # =====================================
+
+    promedio = sum(
+        tiempos
+    ) / len(tiempos)
+
+    # =====================================
+    # RETURN
+    # =====================================
+
+    return {
+
+        "total": total,
+
+        "internos": internos,
+
+        "externos": externos,
+
+        "mas_usado": mas_usado,
+
+        "mas_rapido": mas_rapido,
+
+        "promedio": promedio
+    }
