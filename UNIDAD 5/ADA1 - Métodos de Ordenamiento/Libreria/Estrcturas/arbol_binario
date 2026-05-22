@@ -1,0 +1,175 @@
+# ============================================
+# ÁRBOL BINARIO DE BÚSQUEDA
+# ============================================
+
+# ============================================
+# NODO
+# ============================================
+
+class Nodo:
+
+    def __init__(self, dato):
+
+        self.dato = dato
+
+        self.izquierda = None
+
+        self.derecha = None
+
+
+# ============================================
+# ÁRBOL BINARIO
+# ============================================
+
+class ArbolBinario:
+
+    def __init__(self):
+
+        self.raiz = None
+
+    # ========================================
+    # INSERTAR
+    # ========================================
+
+    def insertar(self, dato):
+
+        if self.raiz is None:
+
+            self.raiz = Nodo(dato)
+
+        else:
+
+            self._insertar_recursivo(
+                self.raiz,
+                dato
+            )
+
+    def _insertar_recursivo(
+        self,
+        nodo,
+        dato
+    ):
+
+        if dato < nodo.dato:
+
+            if nodo.izquierda is None:
+
+                nodo.izquierda = Nodo(dato)
+
+            else:
+
+                self._insertar_recursivo(
+                    nodo.izquierda,
+                    dato
+                )
+
+        else:
+
+            if nodo.derecha is None:
+
+                nodo.derecha = Nodo(dato)
+
+            else:
+
+                self._insertar_recursivo(
+                    nodo.derecha,
+                    dato
+                )
+
+    # ========================================
+    # RECORRIDO INORDEN
+    # ========================================
+
+    def inorden(self):
+
+        elementos = []
+
+        self._inorden_recursivo(
+            self.raiz,
+            elementos
+        )
+
+        return elementos
+
+    def _inorden_recursivo(
+        self,
+        nodo,
+        elementos
+    ):
+
+        if nodo:
+
+            self._inorden_recursivo(
+                nodo.izquierda,
+                elementos
+            )
+
+            elementos.append(nodo.dato)
+
+            self._inorden_recursivo(
+                nodo.derecha,
+                elementos
+            )
+
+    # ========================================
+    # BUSCAR
+    # ========================================
+
+    def buscar(self, valor):
+
+        return self._buscar_recursivo(
+            self.raiz,
+            valor
+        )
+
+    def _buscar_recursivo(
+        self,
+        nodo,
+        valor
+    ):
+
+        if nodo is None:
+
+            return False
+
+        if nodo.dato == valor:
+
+            return True
+
+        if valor < nodo.dato:
+
+            return self._buscar_recursivo(
+                nodo.izquierda,
+                valor
+            )
+
+        return self._buscar_recursivo(
+            nodo.derecha,
+            valor
+        )
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    arbol = ArbolBinario()
+
+    datos = [50, 30, 70, 20, 40, 60, 80]
+
+    for numero in datos:
+
+        arbol.insertar(numero)
+
+    print("\nRECORRIDO INORDEN:")
+    print(arbol.inorden())
+
+    print("\nBUSCAR 60:")
+    print(arbol.buscar(60))
+
+    print("\nBUSCAR 100:")
+    print(arbol.buscar(100))
+
+    input("\nPresiona ENTER para cerrar...")
