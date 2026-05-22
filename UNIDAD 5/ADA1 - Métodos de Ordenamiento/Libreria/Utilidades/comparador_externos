@@ -1,0 +1,153 @@
+import time
+import matplotlib.pyplot as plt
+
+from externos.mezcla_directa import (
+    mezcla_directa
+)
+
+from externos.intercalacion_directa import (
+    intercalacion_directa
+)
+
+from externos.mezcla_equilibrada import (
+    mezcla_equilibrada
+)
+
+from externos.polifase import (
+    polifase
+)
+
+
+# =========================================
+# MOSTRAR GRAFICA
+# =========================================
+
+def mostrar_grafica(resultados):
+
+    algoritmos = [
+        r[0] for r in resultados
+    ]
+
+    tiempos = [
+        r[1] for r in resultados
+    ]
+
+    plt.figure(
+        figsize=(10, 6)
+    )
+
+    barras = plt.bar(
+        algoritmos,
+        tiempos
+    )
+
+    plt.title(
+        "Comparacion de Algoritmos Externos"
+    )
+
+    plt.xlabel(
+        "Algoritmos"
+    )
+
+    plt.ylabel(
+        "Tiempo (segundos)"
+    )
+
+    plt.tight_layout()
+
+    plt.show()
+
+
+# =========================================
+# COMPARAR EXTERNOS
+# =========================================
+
+def comparar_externos(ruta_archivo):
+
+    resultados = []
+
+    # =====================================
+    # MEZCLA DIRECTA
+    # =====================================
+
+    inicio = time.perf_counter()
+
+    mezcla_directa(
+        ruta_archivo
+    )
+
+    fin = time.perf_counter()
+
+    resultados.append(
+        (
+            "Mezcla Directa",
+            fin - inicio
+        )
+    )
+
+    # =====================================
+    # INTERCALACION
+    # =====================================
+
+    inicio = time.perf_counter()
+
+    intercalacion_directa(
+        ruta_archivo
+    )
+
+    fin = time.perf_counter()
+
+    resultados.append(
+        (
+            "Intercalacion",
+            fin - inicio
+        )
+    )
+
+    # =====================================
+    # EQUILIBRADA
+    # =====================================
+
+    inicio = time.perf_counter()
+
+    mezcla_equilibrada(
+        ruta_archivo
+    )
+
+    fin = time.perf_counter()
+
+    resultados.append(
+        (
+            "Equilibrada",
+            fin - inicio
+        )
+    )
+
+    # =====================================
+    # POLIFASE
+    # =====================================
+
+    inicio = time.perf_counter()
+
+    polifase(
+        ruta_archivo
+    )
+
+    fin = time.perf_counter()
+
+    resultados.append(
+        (
+            "Polifase",
+            fin - inicio
+        )
+    )
+
+    # =====================================
+    # GRAFICA
+    # =====================================
+
+    mostrar_grafica(
+        resultados
+    )
+
+    return resultados
