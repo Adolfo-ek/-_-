@@ -1,0 +1,92 @@
+# =========================================
+# TABLA HASH
+# =========================================
+
+class TablaHash:
+
+    def __init__(self, tamaño=10):
+
+        self.tamaño = tamaño
+
+        self.tabla = [[] for _ in range(tamaño)]
+
+    # =====================================
+    # FUNCION HASH
+    # =====================================
+
+    def funcion_hash(self, clave):
+
+        return hash(clave) % self.tamaño
+
+    # =====================================
+    # INSERTAR
+    # =====================================
+
+    def insertar(self, clave):
+
+        indice = self.funcion_hash(
+            clave
+        )
+
+        if clave not in self.tabla[indice]:
+
+            self.tabla[indice].append(
+                clave
+            )
+
+    # =====================================
+    # BUSCAR
+    # =====================================
+
+    def buscar(self, clave):
+
+        pasos = []
+
+        indice = self.funcion_hash(
+            clave
+        )
+
+        pasos.append(
+            f"Indice calculado: {indice}"
+        )
+
+        if clave in self.tabla[indice]:
+
+            pasos.append(
+                f"Elemento encontrado en indice {indice}"
+            )
+
+            return True, pasos
+
+        pasos.append(
+            "Elemento no encontrado"
+        )
+
+        return False, pasos
+
+    # =====================================
+    # MOSTRAR
+    # =====================================
+
+    def mostrar(self):
+
+        for i, bucket in enumerate(self.tabla):
+
+            print(f"{i}: {bucket}")
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    tabla = TablaHash()
+
+    datos = [15, 8, 22, 41, 3]
+
+    for dato in datos:
+
+        tabla.insertar(dato)
+
+    tabla.mostrar()
