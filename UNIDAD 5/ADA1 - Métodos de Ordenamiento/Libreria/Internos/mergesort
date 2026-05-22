@@ -1,0 +1,107 @@
+# ============================================
+# LIBRERÍA MERGE SORT
+# ============================================
+
+def merge_sort(datos, ascendente=True):
+    """
+    Ordenamiento Merge Sort.
+    """
+
+    arr = datos.copy()
+
+    # ========================================
+    # FUNCIÓN RECURSIVA
+    # ========================================
+
+    def merge(lista):
+
+        if len(lista) <= 1:
+
+            return lista
+
+        mitad = len(lista) // 2
+
+        izquierda = merge(lista[:mitad])
+
+        derecha = merge(lista[mitad:])
+
+        return combinar(
+            izquierda,
+            derecha
+        )
+
+    # ========================================
+    # COMBINAR LISTAS
+    # ========================================
+
+    def combinar(izq, der):
+
+        resultado = []
+
+        i = 0
+        j = 0
+
+        while i < len(izq) and j < len(der):
+
+            # Ascendente
+            if ascendente:
+
+                if izq[i] <= der[j]:
+
+                    resultado.append(izq[i])
+
+                    i += 1
+
+                else:
+
+                    resultado.append(der[j])
+
+                    j += 1
+
+            # Descendente
+            else:
+
+                if izq[i] >= der[j]:
+
+                    resultado.append(izq[i])
+
+                    i += 1
+
+                else:
+
+                    resultado.append(der[j])
+
+                    j += 1
+
+        resultado.extend(izq[i:])
+
+        resultado.extend(der[j:])
+
+        return resultado
+
+    return merge(arr)
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [38, 27, 43, 3, 9, 82, 10]
+
+    palabras = ["rojo", "azul", "verde", "amarillo"]
+
+    print("\nNÚMEROS:")
+    print(merge_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(merge_sort(numeros, ascendente=False))
+
+    print("\nPALABRAS:")
+    print(merge_sort(palabras))
+
+    print("\nPALABRAS DESC:")
+    print(merge_sort(palabras, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
