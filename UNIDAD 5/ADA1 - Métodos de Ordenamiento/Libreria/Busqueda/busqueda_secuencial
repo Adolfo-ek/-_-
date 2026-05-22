@@ -1,0 +1,43 @@
+# =========================================
+# BUSQUEDA SECUENCIAL
+# =========================================
+
+def busqueda_secuencial(lista, objetivo):
+
+    pasos = []
+
+    for i in range(len(lista)):
+
+        pasos.append(
+            f"Revisando posicion {i}: {lista[i]}"
+        )
+
+        if lista[i] == objetivo:
+
+            pasos.append(
+                f"\nElemento encontrado en posicion {i}"
+            )
+
+            return i, pasos
+
+    pasos.append(
+        "\nElemento no encontrado"
+    )
+
+    return -1, pasos
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    datos = [15, 8, 22, 41, 3]
+
+    objetivo = 22
+
+    posicion, pasos = busqueda_secuencial(
+        datos,
+        objetivo
+    )
