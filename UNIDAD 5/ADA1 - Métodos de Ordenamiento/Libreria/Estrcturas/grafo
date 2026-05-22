@@ -1,0 +1,97 @@
+# ============================================
+# GRAFO SIMPLE
+# ============================================
+
+class Grafo:
+
+    def __init__(self):
+
+        self.grafo = {}
+
+    # ========================================
+    # AGREGAR VÉRTICE
+    # ========================================
+
+    def agregar_vertice(self, vertice):
+
+        if vertice not in self.grafo:
+
+            self.grafo[vertice] = []
+
+    # ========================================
+    # AGREGAR ARISTA
+    # ========================================
+
+    def agregar_arista(
+        self,
+        origen,
+        destino
+    ):
+
+        if origen not in self.grafo:
+
+            self.agregar_vertice(origen)
+
+        if destino not in self.grafo:
+
+            self.agregar_vertice(destino)
+
+        self.grafo[origen].append(destino)
+
+        self.grafo[destino].append(origen)
+
+    # ========================================
+    # MOSTRAR
+    # ========================================
+
+    def mostrar(self):
+
+        for vertice in self.grafo:
+
+            print(
+                f"{vertice} -> {self.grafo[vertice]}"
+            )
+
+    # ========================================
+    # BUSCAR CONEXIÓN
+    # ========================================
+
+    def existe_conexion(
+        self,
+        origen,
+        destino
+    ):
+
+        return destino in self.grafo.get(
+            origen,
+            []
+        )
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    grafo = Grafo()
+
+    grafo.agregar_arista("A", "B")
+
+    grafo.agregar_arista("A", "C")
+
+    grafo.agregar_arista("B", "D")
+
+    grafo.agregar_arista("C", "D")
+
+    print("\nGRAFO:\n")
+
+    grafo.mostrar()
+
+    print("\n¿Existe conexión A -> C?")
+    print(grafo.existe_conexion("A", "C"))
+
+    print("\n¿Existe conexión A -> E?")
+    print(grafo.existe_conexion("A", "E"))
+
+    input("\nPresiona ENTER para cerrar...")
