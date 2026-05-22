@@ -1,0 +1,48 @@
+from docx import Document
+
+from utilidades.normalizador import (
+    normalizar_lista
+)
+
+
+# =========================================
+# LEER WORD
+# =========================================
+
+def leer_word(ruta):
+
+    try:
+
+        documento = Document(
+            ruta
+        )
+
+        texto = ""
+
+        # =====================================
+        # EXTRAER TEXTO
+        # =====================================
+
+        for parrafo in documento.paragraphs:
+
+            texto += parrafo.text + " "
+
+        # =====================================
+        # LIMPIAR
+        # =====================================
+
+        texto = texto.replace(
+            ",",
+            " "
+        )
+
+        texto = texto.replace(
+            "\n",
+            " "
+        )
+
+        datos = texto.split()
+
+        return normalizar_lista(
+            datos
+        )
