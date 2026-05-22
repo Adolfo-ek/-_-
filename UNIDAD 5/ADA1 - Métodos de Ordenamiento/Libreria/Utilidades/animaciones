@@ -1,0 +1,199 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
+
+# =========================================
+# VELOCIDAD GLOBAL
+# =========================================
+
+VELOCIDAD = 0.08
+
+
+# =========================================
+# CAMBIAR VELOCIDAD
+# =========================================
+
+def cambiar_velocidad(valor):
+
+    global VELOCIDAD
+
+    VELOCIDAD = valor
+
+
+# =========================================
+# FUNCION BASE
+# =========================================
+
+def visualizar(datos, titulo, color):
+
+    # =====================================
+    # CERRAR GRAFICAS ANTERIORES
+    # =====================================
+
+    plt.close('all')
+
+    datos_animacion = datos.copy()
+
+    fig, ax = plt.subplots()
+
+    barras = ax.bar(
+
+        range(len(datos_animacion)),
+        datos_animacion,
+        color=color
+    )
+
+    ax.set_title(
+        titulo
+    )
+
+    # =====================================
+    # BUBBLE SORT VISUAL
+    # =====================================
+
+    def bubble_generator():
+
+        arr = datos_animacion
+
+        n = len(arr)
+
+        for i in range(n):
+
+            for j in range(0, n - i - 1):
+
+                if arr[j] > arr[j + 1]:
+
+                    arr[j], arr[j + 1] = (
+                        arr[j + 1],
+                        arr[j]
+                    )
+
+                    yield arr
+
+    generador = bubble_generator()
+
+    # =====================================
+    # UPDATE
+    # =====================================
+
+    def actualizar(arr):
+
+        for rect, val in zip(barras, arr):
+
+            rect.set_height(val)
+
+        time.sleep(VELOCIDAD)
+
+        return barras
+
+    # =====================================
+    # ANIMACION
+    # =====================================
+
+    animation.FuncAnimation(
+
+        fig,
+
+        actualizar,
+
+        frames=generador,
+
+        repeat=False,
+
+        interval=1,
+
+        blit=False
+    )
+
+    plt.show()
+
+
+# =========================================
+# BUBBLE
+# =========================================
+
+def animar_burbuja(datos):
+
+    visualizar(
+        datos,
+        "Bubble Sort",
+        "#38bdf8"
+    )
+
+
+# =========================================
+# SELECTION
+# =========================================
+
+def animar_selection(datos):
+
+    visualizar(
+        datos,
+        "Selection Sort",
+        "#22c55e"
+    )
+
+
+# =========================================
+# INSERTION
+# =========================================
+
+def animar_insertion(datos):
+
+    visualizar(
+        datos,
+        "Insertion Sort",
+        "#f97316"
+    )
+
+
+# =========================================
+# QUICK
+# =========================================
+
+def animar_quick(datos):
+
+    visualizar(
+        datos,
+        "Quick Sort",
+        "#a855f7"
+    )
+
+
+# =========================================
+# HEAP
+# =========================================
+
+def animar_heap(datos):
+
+    visualizar(
+        datos,
+        "Heap Sort",
+        "#ef4444"
+    )
+
+
+# =========================================
+# SHELL
+# =========================================
+
+def animar_shell(datos):
+
+    visualizar(
+        datos,
+        "Shell Sort",
+        "#facc15"
+    )
+
+
+# =========================================
+# RADIX
+# =========================================
+
+def animar_radix(datos):
+
+    visualizar(
+        datos,
+        "Radix Sort",
+        "#06b6d4"
+    )
