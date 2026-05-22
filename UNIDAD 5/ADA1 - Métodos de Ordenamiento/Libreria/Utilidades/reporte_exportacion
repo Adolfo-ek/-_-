@@ -1,0 +1,136 @@
+# =========================================
+# IMPORTS
+# =========================================
+
+from tkinter import filedialog
+from tkinter import messagebox
+
+
+# =========================================
+# EXPORTAR REPORTE
+# =========================================
+
+def exportar_reporte(
+
+    algoritmo,
+    tipo,
+    tiempo,
+    total_datos,
+    orden,
+    resultado
+):
+
+    ruta = filedialog.asksaveasfilename(
+
+        title="Guardar Reporte",
+
+        defaultextension=".txt",
+
+        filetypes=[
+            ("Archivo TXT", "*.txt")
+        ]
+    )
+
+    if not ruta:
+
+        return
+
+    try:
+
+        with open(
+            ruta,
+            "w",
+            encoding="utf-8"
+        ) as archivo:
+
+            archivo.write(
+                "====================================\n"
+            )
+
+            archivo.write(
+                "   REPORTE DE ORDENAMIENTO\n"
+            )
+
+            archivo.write(
+                "====================================\n\n"
+            )
+
+            archivo.write(
+                f"ALGORITMO: {algoritmo}\n"
+            )
+
+            archivo.write(
+                f"TIPO: {tipo}\n"
+            )
+
+            archivo.write(
+                f"TIEMPO: {tiempo:.8f} segundos\n"
+            )
+
+            archivo.write(
+                f"TOTAL DATOS: {total_datos}\n"
+            )
+
+            archivo.write(
+                f"ORDEN: {orden}\n"
+            )
+
+            archivo.write(
+                "\n====================================\n"
+            )
+
+            archivo.write(
+                "PRIMEROS 20 ELEMENTOS\n"
+            )
+
+            archivo.write(
+                "====================================\n\n"
+            )
+
+            archivo.write(
+                str(resultado[:20])
+            )
+
+            archivo.write(
+                "\n\n====================================\n"
+            )
+
+            archivo.write(
+                "ULTIMOS 20 ELEMENTOS\n"
+            )
+
+            archivo.write(
+                "====================================\n\n"
+            )
+
+            archivo.write(
+                str(resultado[-20:])
+            )
+
+            archivo.write(
+                "\n\n====================================\n"
+            )
+
+            archivo.write(
+                "RESULTADO COMPLETO\n"
+            )
+
+            archivo.write(
+                "====================================\n\n"
+            )
+
+            archivo.write(
+                str(resultado)
+            )
+
+        messagebox.showinfo(
+            "Exito",
+            "Reporte exportado correctamente."
+        )
+
+    except Exception as e:
+
+        messagebox.showerror(
+            "Error",
+            str(e)
+        )
