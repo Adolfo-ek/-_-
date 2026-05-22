@@ -1,0 +1,97 @@
+# ============================================
+# ESTRUCTURA PILA (STACK)
+# ============================================
+
+class Pila:
+
+    def __init__(self):
+
+        self.items = []
+
+    # ========================================
+    # APILAR
+    # ========================================
+
+    def push(self, elemento):
+
+        self.items.append(elemento)
+
+    # ========================================
+    # DESAPILAR
+    # ========================================
+
+    def pop(self):
+
+        if not self.esta_vacia():
+
+            return self.items.pop()
+
+        return "La pila está vacía."
+
+    # ========================================
+    # VER TOPE
+    # ========================================
+
+    def peek(self):
+
+        if not self.esta_vacia():
+
+            return self.items[-1]
+
+        return None
+
+    # ========================================
+    # VERIFICAR VACÍA
+    # ========================================
+
+    def esta_vacia(self):
+
+        return len(self.items) == 0
+
+    # ========================================
+    # TAMAÑO
+    # ========================================
+
+    def size(self):
+
+        return len(self.items)
+
+    # ========================================
+    # MOSTRAR
+    # ========================================
+
+    def mostrar(self):
+
+        return self.items
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    pila = Pila()
+
+    pila.push(10)
+
+    pila.push(20)
+
+    pila.push(30)
+
+    print("\nPila actual:")
+    print(pila.mostrar())
+
+    print("\nElemento eliminado:")
+    print(pila.pop())
+
+    print("\nTope:")
+    print(pila.peek())
+
+    print("\nTamaño:")
+    print(pila.size())
+
+    print("\nPila final:")
+    print(pila.mostrar())
+
+    input("\nPresiona ENTER para cerrar...")
