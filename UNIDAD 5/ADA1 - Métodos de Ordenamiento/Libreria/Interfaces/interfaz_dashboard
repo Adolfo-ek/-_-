@@ -1,0 +1,449 @@
+import tkinter as tk
+
+from utilidades.historial import (
+    leer_historial
+)
+
+from utilidades.estadisticas import (
+    obtener_estadisticas
+)
+
+
+class InterfazDashboard:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # =====================================
+        # CONFIG
+        # =====================================
+
+        self.root.title(
+            "Dashboard Global"
+        )
+
+        self.root.geometry(
+            "1600x950"
+        )
+
+        self.root.minsize(
+            1300,
+            800
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        # =====================================
+        # LOAD DATA
+        # =====================================
+
+        historial = leer_historial()
+
+        stats = obtener_estadisticas()
+
+        # =====================================
+        # GRID ROOT
+        # =====================================
+
+        self.root.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # HEADER
+        # =====================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=100
+        )
+
+        header.grid(
+            row=0,
+            column=0,
+            sticky="ew"
+        )
+
+        header.grid_propagate(False)
+
+        titulo = tk.Label(
+
+            header,
+
+            text="GLOBAL DASHBOARD",
+
+            font=(
+                "Segoe UI",
+                30,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#a855f7"
+        )
+
+        titulo.pack(
+            pady=(18, 5)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Centro General de Estadisticas y Analisis",
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            bg="#0f172a",
+
+            fg="#cbd5e1"
+        )
+
+        subtitulo.pack()
+
+        # =====================================
+        # MAIN
+        # =====================================
+
+        main = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        main.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=25,
+            pady=25
+        )
+
+        main.grid_rowconfigure(
+            2,
+            weight=1
+        )
+
+        main.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # TOP DASHBOARD
+        # =====================================
+
+        dashboard = tk.Frame(
+            main,
+            bg="#020617"
+        )
+
+        dashboard.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            pady=(0, 20)
+        )
+
+        for i in range(4):
+
+            dashboard.grid_columnconfigure(
+                i,
+                weight=1,
+                uniform="col"
+            )
+
+        # =====================================
+        # CREATE CARD
+        # =====================================
+
+        def crear_card(
+            row,
+            column,
+            titulo,
+            valor,
+            color
+        ):
+
+            card = tk.Frame(
+                dashboard,
+                bg="#111827",
+                height=160
+            )
+
+            card.grid(
+                row=row,
+                column=column,
+                padx=10,
+                pady=10,
+                sticky="nsew"
+            )
+
+            card.grid_propagate(False)
+
+            titulo_label = tk.Label(
+
+                card,
+
+                text=titulo,
+
+                font=(
+                    "Segoe UI",
+                    12,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg=color
+            )
+
+            titulo_label.pack(
+                pady=(28, 10)
+            )
+
+            valor_label = tk.Label(
+
+                card,
+
+                text=valor,
+
+                font=(
+                    "Segoe UI",
+                    20,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg="white",
+
+                wraplength=250,
+
+                justify="center"
+            )
+
+            valor_label.pack()
+
+        # =====================================
+        # CARDS
+        # =====================================
+
+        crear_card(
+            0,
+            0,
+            "TOTAL EJECUCIONES",
+            str(stats["total"]),
+            "#38bdf8"
+        )
+
+        crear_card(
+            0,
+            1,
+            "ALGORITMO MAS USADO",
+            stats["mas_usado"],
+            "#22c55e"
+        )
+
+        crear_card(
+            0,
+            2,
+            "ALGORITMO MAS RAPIDO",
+            stats["mas_rapido"],
+            "#f97316"
+        )
+
+        crear_card(
+            0,
+            3,
+            "PROMEDIO GLOBAL",
+            f'{stats["promedio"]:.6f}s',
+            "#a855f7"
+        )
+
+        # =====================================
+        # SECOND DASHBOARD
+        # =====================================
+
+        dashboard2 = tk.Frame(
+            main,
+            bg="#020617"
+        )
+
+        dashboard2.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            pady=(0, 20)
+        )
+
+        for i in range(3):
+
+            dashboard2.grid_columnconfigure(
+                i,
+                weight=1,
+                uniform="col2"
+            )
+
+        crear_card(
+            0,
+            0,
+            "INTERNOS",
+            str(stats["internos"]),
+            "#06b6d4"
+        )
+
+        crear_card(
+            0,
+            1,
+            "EXTERNOS",
+            str(stats["externos"]),
+            "#facc15"
+        )
+
+        ultimo = (
+            historial[-1][2]
+            if historial
+            else "Ninguno"
+        )
+
+        crear_card(
+            0,
+            2,
+            "ULTIMO ALGORITMO",
+            ultimo,
+            "#ef4444"
+        )
+
+        # =====================================
+        # HISTORY PANEL
+        # =====================================
+
+        historial_card = tk.Frame(
+            main,
+            bg="#111827"
+        )
+
+        historial_card.grid(
+            row=2,
+            column=0,
+            sticky="nsew"
+        )
+
+        titulo_historial = tk.Label(
+
+            historial_card,
+
+            text="HISTORIAL GLOBAL",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#22c55e"
+        )
+
+        titulo_historial.pack(
+            pady=15
+        )
+
+        # =====================================
+        # TEXT AREA
+        # =====================================
+
+        area = tk.Text(
+
+            historial_card,
+
+            bg="#020617",
+
+            fg="#22c55e",
+
+            font=(
+                "Consolas",
+                11
+            ),
+
+            relief="flat",
+
+            padx=15,
+
+            pady=15
+        )
+
+        area.pack(
+            expand=True,
+            fill="both",
+            padx=15,
+            pady=(0, 15)
+        )
+
+        # =====================================
+        # SHOW HISTORY
+        # =====================================
+
+        if historial:
+
+            for fila in reversed(historial):
+
+                fecha = fila[0]
+
+                tipo = fila[1]
+
+                algoritmo = fila[2]
+
+                cantidad = fila[3]
+
+                tiempo = fila[4]
+
+                texto = (
+                    f"[{fecha}]  "
+                    f"{tipo}  |  "
+                    f"{algoritmo}  |  "
+                    f"Datos: {cantidad}  |  "
+                    f"Tiempo: {tiempo}s\n"
+                )
+
+                area.insert(
+                    tk.END,
+                    texto
+                )
+
+        else:
+
+            area.insert(
+
+                tk.END,
+
+                "No hay historial disponible."
+            )
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = InterfazDashboard(root)
+
+    root.mainloop()
