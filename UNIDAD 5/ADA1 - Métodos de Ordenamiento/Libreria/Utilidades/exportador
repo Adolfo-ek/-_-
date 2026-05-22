@@ -1,0 +1,107 @@
+from tkinter import filedialog
+
+import pandas as pd
+
+import csv
+
+
+# ============================================
+# EXPORTAR TXT
+# ============================================
+
+def exportar_txt(datos):
+
+    ruta = filedialog.asksaveasfilename(
+
+        defaultextension=".txt",
+
+        filetypes=[
+            ("Archivo TXT", "*.txt")
+        ]
+    )
+
+    if ruta:
+
+        with open(
+
+            ruta,
+
+            "w",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            for dato in datos:
+
+                archivo.write(
+                    f"{dato}\n"
+                )
+
+
+# ============================================
+# EXPORTAR CSV
+# ============================================
+
+def exportar_csv(datos):
+
+    ruta = filedialog.asksaveasfilename(
+
+        defaultextension=".csv",
+
+        filetypes=[
+            ("Archivo CSV", "*.csv")
+        ]
+    )
+
+    if ruta:
+
+        with open(
+
+            ruta,
+
+            "w",
+
+            newline="",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            escritor = csv.writer(
+                archivo
+            )
+
+            for dato in datos:
+
+                escritor.writerow(
+                    [dato]
+                )
+
+
+# ============================================
+# EXPORTAR EXCEL
+# ============================================
+
+def exportar_excel(datos):
+
+    ruta = filedialog.asksaveasfilename(
+
+        defaultextension=".xlsx",
+
+        filetypes=[
+            ("Archivo Excel", "*.xlsx")
+        ]
+    )
+
+    if ruta:
+
+        df = pd.DataFrame(
+            datos,
+            columns=["Datos Ordenados"]
+        )
+
+        df.to_excel(
+            ruta,
+            index=False
+        )
