@@ -1,0 +1,71 @@
+# ============================================
+# LIBRERÍA SHELL SORT
+# ============================================
+
+def shell_sort(datos, ascendente=True):
+    """
+    Ordenamiento Shell Sort.
+    """
+
+    arr = datos.copy()
+
+    n = len(arr)
+
+    gap = n // 2
+
+    while gap > 0:
+
+        for i in range(gap, n):
+
+            temp = arr[i]
+
+            j = i
+
+            # Ascendente
+            if ascendente:
+
+                while j >= gap and arr[j - gap] > temp:
+
+                    arr[j] = arr[j - gap]
+
+                    j -= gap
+
+            # Descendente
+            else:
+
+                while j >= gap and arr[j - gap] < temp:
+
+                    arr[j] = arr[j - gap]
+
+                    j -= gap
+
+            arr[j] = temp
+
+        gap //= 2
+
+    return arr
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [23, 12, 1, 8, 34, 54, 2, 3]
+
+    palabras = ["delta", "alpha", "charlie", "bravo"]
+
+    print("\nNÚMEROS:")
+    print(shell_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(shell_sort(numeros, ascendente=False))
+
+    print("\nPALABRAS:")
+    print(shell_sort(palabras))
+
+    print("\nPALABRAS DESC:")
+    print(shell_sort(palabras, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
