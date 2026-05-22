@@ -1,0 +1,63 @@
+import matplotlib.pyplot as plt
+
+
+# ============================================
+# MOSTRAR GRAFICA
+# ============================================
+
+def mostrar_grafica(resultados):
+
+    nombres = list(
+        resultados.keys()
+    )
+
+    tiempos = list(
+        resultados.values()
+    )
+
+    plt.figure(
+        figsize=(10, 6)
+    )
+
+    barras = plt.bar(
+        nombres,
+        tiempos
+    )
+
+    plt.title(
+        "Comparacion de Algoritmos"
+    )
+
+    plt.xlabel(
+        "Algoritmos"
+    )
+
+    plt.ylabel(
+        "Tiempo (segundos)"
+    )
+
+    # ========================================
+    # MOSTRAR VALORES
+    # ========================================
+
+    for barra in barras:
+
+        altura = barra.get_height()
+
+        plt.text(
+
+            barra.get_x()
+            + barra.get_width() / 2,
+
+            altura,
+
+            f"{altura:.6f}",
+
+            ha="center",
+
+            va="bottom"
+        )
+
+    plt.tight_layout()
+
+    plt.show()
