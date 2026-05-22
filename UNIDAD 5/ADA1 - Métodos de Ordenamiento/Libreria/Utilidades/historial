@@ -1,0 +1,126 @@
+import csv
+import os
+from datetime import datetime
+
+
+# =========================================
+# ARCHIVO HISTORIAL
+# =========================================
+
+ARCHIVO_HISTORIAL = "historial_ejecuciones.csv"
+
+
+# =========================================
+# CREAR ARCHIVO SI NO EXISTE
+# =========================================
+
+def inicializar_historial():
+
+    if not os.path.exists(
+        ARCHIVO_HISTORIAL
+    ):
+
+        with open(
+
+            ARCHIVO_HISTORIAL,
+
+            mode="w",
+
+            newline="",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            writer = csv.writer(
+                archivo
+            )
+
+            writer.writerow([
+                "Fecha",
+                "Tipo",
+                "Algoritmo",
+                "Cantidad",
+                "Tiempo"
+            ])
+
+
+# =========================================
+# GUARDAR EJECUCION
+# =========================================
+
+def guardar_ejecucion(
+
+    tipo,
+    algoritmo,
+    cantidad,
+    tiempo
+):
+
+    inicializar_historial()
+
+    fecha = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    with open(
+
+        ARCHIVO_HISTORIAL,
+
+        mode="a",
+
+        newline="",
+
+        encoding="utf-8"
+
+    ) as archivo:
+
+        writer = csv.writer(
+            archivo
+        )
+
+        writer.writerow([
+
+            fecha,
+
+            tipo,
+
+            algoritmo,
+
+            cantidad,
+
+            f"{tiempo:.6f}"
+        ])
+
+
+# =========================================
+# LEER HISTORIAL
+# =========================================
+
+def leer_historial():
+
+    inicializar_historial()
+
+    datos = []
+
+    with open(
+
+        ARCHIVO_HISTORIAL,
+
+        mode="r",
+
+        encoding="utf-8"
+
+    ) as archivo:
+
+        reader = csv.reader(
+            archivo
+        )
+
+        next(reader)
+
+        for fila in reader:
+
+            datos.append(fila)
+
+    return datos
