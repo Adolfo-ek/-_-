@@ -1,0 +1,90 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>3f91c970-1128-44a0-a02a-7686cbfada0a</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>utilidades\animaciones.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>Libreria</Name>
+    <RootNamespace>Libreria</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="archivos\guardar_txt.py" />
+    <Compile Include="archivos\leer_csv.py" />
+    <Compile Include="archivos\leer_excel.py" />
+    <Compile Include="archivos\leer_json.py" />
+    <Compile Include="archivos\leer_txt.py" />
+    <Compile Include="archivos\leer_word.py" />
+    <Compile Include="estructuras\arbol_binario.py" />
+    <Compile Include="estructuras\cola.py" />
+    <Compile Include="estructuras\grafo.py" />
+    <Compile Include="estructuras\lista_enlazada.py" />
+    <Compile Include="estructuras\pila.py" />
+    <Compile Include="estructuras\tabla_hash.py" />
+    <Compile Include="externos\intercalacion_directa.py" />
+    <Compile Include="externos\mezcla_directa.py" />
+    <Compile Include="externos\mezcla_equilibrada.py" />
+    <Compile Include="externos\polifase.py" />
+    <Compile Include="interfaces\interfaz_externa.py" />
+    <Compile Include="interfaces\interfaz_interna.py" />
+    <Compile Include="interfaces\interfaz_principal.py" />
+    <Compile Include="internos\burbuja.py" />
+    <Compile Include="internos\heapsort.py" />
+    <Compile Include="internos\insertionsort.py" />
+    <Compile Include="internos\mergesort.py" />
+    <Compile Include="internos\quicksort.py" />
+    <Compile Include="internos\radixsort.py" />
+    <Compile Include="internos\selectionsort.py" />
+    <Compile Include="internos\shellsort.py" />
+    <Compile Include="Libreria.py" />
+    <Compile Include="main.py" />
+    <Compile Include="utilidades\animaciones.py" />
+    <Compile Include="utilidades\comparador.py" />
+    <Compile Include="utilidades\exportador.py" />
+    <Compile Include="utilidades\generador_datos.py" />
+    <Compile Include="utilidades\lector_archivos.py" />
+    <Compile Include="utilidades\validaciones.py" />
+    <Compile Include="utilidades\visualizador.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="archivos\entradas\" />
+    <Folder Include="archivos\temporales\" />
+    <Folder Include="archivos\salidas\" />
+    <Folder Include="internos\" />
+    <Folder Include="externos\" />
+    <Folder Include="interfaces\" />
+    <Folder Include="archivos\" />
+    <Folder Include="estructuras\" />
+    <Folder Include="utilidades\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="archivos\datos.docx" />
+    <Content Include="archivos\datos.json" />
+    <Content Include="archivos\datos.txt" />
+    <Content Include="archivos\datos.xlsx" />
+    <Content Include="datos.csv" />
+    <Content Include="datos.txt" />
+    <Content Include="datos.xlsx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
