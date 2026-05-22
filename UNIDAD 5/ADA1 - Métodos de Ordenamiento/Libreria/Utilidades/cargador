@@ -1,0 +1,154 @@
+from tkinter import (
+    filedialog,
+    messagebox
+)
+
+from archivos.leer_txt import (
+    leer_txt
+)
+
+from archivos.leer_csv import (
+    leer_csv
+)
+
+from archivos.leer_excel import (
+    leer_excel
+)
+
+from archivos.leer_json import (
+    leer_json
+)
+
+from archivos.leer_word import (
+    leer_word
+)
+
+
+# =========================================
+# CARGADOR UNIVERSAL
+# =========================================
+
+def cargar_archivo():
+
+    ruta = filedialog.askopenfilename(
+
+        title="Seleccionar Archivo",
+
+        filetypes=[
+
+            (
+                "Todos los Archivos Compatibles",
+
+                "*.txt *.csv *.xlsx *.json *.docx"
+            ),
+
+            ("Archivos TXT", "*.txt"),
+
+            ("Archivos CSV", "*.csv"),
+
+            ("Archivos Excel", "*.xlsx"),
+
+            ("Archivos JSON", "*.json"),
+
+            ("Archivos Word", "*.docx"),
+
+            ("Todos los archivos", "*.*")
+        ]
+    )
+
+    if not ruta:
+
+        return []
+
+    # =====================================
+    # TXT
+    # =====================================
+
+    if ruta.endswith(".txt"):
+
+        datos = leer_txt(
+            ruta
+        )
+
+    # =====================================
+    # CSV
+    # =====================================
+
+    elif ruta.endswith(".csv"):
+
+        datos = leer_csv(
+            ruta
+        )
+
+    # =====================================
+    # EXCEL
+    # =====================================
+
+    elif ruta.endswith(".xlsx"):
+
+        datos = leer_excel(
+            ruta
+        )
+
+    # =====================================
+    # JSON
+    # =====================================
+
+    elif ruta.endswith(".json"):
+
+        datos = leer_json(
+            ruta
+        )
+
+    # =====================================
+    # WORD
+    # =====================================
+
+    elif ruta.endswith(".docx"):
+
+        datos = leer_word(
+            ruta
+        )
+
+    # =====================================
+    # NO SOPORTADO
+    # =====================================
+
+    else:
+
+        messagebox.showerror(
+
+            "Error",
+
+            "Formato no soportado."
+        )
+
+        return []
+
+    # =====================================
+    # VALIDAR
+    # =====================================
+
+    if not datos:
+
+        messagebox.showwarning(
+
+            "Advertencia",
+
+            "No se encontraron datos validos."
+        )
+
+        return []
+
+    # =====================================
+    # SUCCESS
+    # =====================================
+
+    messagebox.showinfo(
+
+        "Archivo Cargado",
+
+        f"Se cargaron {len(datos)} datos correctamente."
+    )
+
+    return datos
