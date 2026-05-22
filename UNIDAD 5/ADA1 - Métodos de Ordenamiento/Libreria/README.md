@@ -1,4 +1,4 @@
-# 📚 Librerias_2.0 - Sistema Modular de Algoritmos y Estructuras de Datos
+# 📚 Librerias - Sistema Modular de Algoritmos y Estructuras de Datos
 
 ## 📌 Descripción
 
@@ -106,4 +106,4 @@ python main.py
 Desarrollar un sistema integral y modular que permita implementar, analizar y visualizar algoritmos, estructuras de datos y procesamiento de archivos utilizando Python.
 
 👨‍💻 Autor
-Adolof Gomez Ek
+Adolfo Gomez Ek
