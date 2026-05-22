@@ -1,0 +1,76 @@
+# ============================================
+# LECTOR CENTRAL DE ARCHIVOS
+# ============================================
+
+import os
+
+from archivos.leer_txt import leer_txt
+from archivos.leer_csv import leer_csv
+from archivos.leer_excel import leer_excel
+from archivos.leer_json import leer_json
+from archivos.leer_word import leer_word
+
+
+# ============================================
+# DETECTAR Y LEER ARCHIVO
+# ============================================
+
+def leer_archivo(ruta):
+
+    extension = os.path.splitext(ruta)[1].lower()
+
+    # TXT
+    if extension == ".txt":
+
+        return leer_txt(ruta)
+
+    # CSV
+    elif extension == ".csv":
+
+        return leer_csv(ruta)
+
+    # EXCEL
+    elif extension == ".xlsx":
+
+        return leer_excel(ruta)
+
+    # JSON
+    elif extension == ".json":
+
+        return leer_json(ruta)
+
+    # WORD
+    elif extension == ".docx":
+
+        return leer_word(ruta)
+
+    else:
+
+        raise ValueError(
+            "Formato no soportado"
+        )
+
+
+# ============================================
+# PRUEBA
+# ============================================
+
+if __name__ == "__main__":
+
+    ruta = "archivos/datos.txt"
+
+    try:
+
+        datos = leer_archivo(ruta)
+
+        print("Datos leidos:")
+
+        print(datos)
+
+    except Exception as e:
+
+        print("Error:")
+
+        print(e)
+
+    input("\nPresione ENTER para continuar...")
