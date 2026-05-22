@@ -1,0 +1,911 @@
+# =========================================
+# IMPORTS
+# =========================================
+
+import tkinter as tk
+import time
+
+from tkinter import (
+    filedialog,
+    messagebox,
+    ttk
+)
+
+from externos.mezcla_directa import (
+    mezcla_directa
+)
+
+from externos.intercalacion_directa import (
+    intercalacion_directa
+)
+
+from externos.mezcla_equilibrada import (
+    mezcla_equilibrada
+)
+
+from externos.polifase import (
+    polifase
+)
+
+from utilidades.exportador import (
+    exportar_txt,
+    exportar_csv,
+    exportar_excel
+)
+
+from utilidades.comparador_externos import (
+    comparar_externos
+)
+
+from utilidades.historial import (
+    guardar_ejecucion
+)
+
+
+# =========================================
+# CLASE
+# =========================================
+
+class InterfazExterna:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # =====================================
+        # CONFIG
+        # =====================================
+
+        self.root.title(
+            "External Sorting System"
+        )
+
+        self.root.geometry(
+            "1850x980"
+        )
+
+        self.root.minsize(
+            1450,
+            850
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        self.ruta_archivo = None
+
+        self.resultado_actual = []
+
+        self.algoritmo_actual = ""
+
+        self.tiempo_actual = 0
+
+        # =====================================
+        # GRID ROOT
+        # =====================================
+
+        self.root.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        # =====================================
+        # HEADER
+        # =====================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=90
+        )
+
+        header.grid(
+            row=0,
+            column=0,
+            columnspan=2,
+            sticky="ew"
+        )
+
+        header.grid_propagate(False)
+
+        titulo = tk.Label(
+
+            header,
+
+            text="EXTERNAL SORTING SYSTEM",
+
+            font=(
+                "Segoe UI",
+                30,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        titulo.pack(
+            pady=(10, 0)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Sistema Profesional de Ordenamientos Externos",
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            bg="#0f172a",
+
+            fg="#94a3b8"
+        )
+
+        subtitulo.pack()
+
+        # =====================================
+        # SIDEBAR
+        # =====================================
+
+        sidebar = tk.Frame(
+            root,
+            bg="#0f172a",
+            width=310
+        )
+
+        sidebar.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=(10, 5),
+            pady=10
+        )
+
+        sidebar.grid_propagate(False)
+
+        # =====================================
+        # MENU TITLE
+        # =====================================
+
+        menu = tk.Label(
+
+            sidebar,
+
+            text="MENU EXTERNOS",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        menu.pack(
+            pady=20
+        )
+
+        # =====================================
+        # ORDEN
+        # =====================================
+
+        tk.Label(
+
+            sidebar,
+
+            text="TIPO DE ORDEN",
+
+            font=(
+                "Segoe UI",
+                11,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#facc15"
+        ).pack(
+            pady=(5, 5)
+        )
+
+        self.combo_orden = ttk.Combobox(
+
+            sidebar,
+
+            values=[
+                "Ascendente",
+                "Descendente"
+            ],
+
+            state="readonly",
+
+            width=25
+        )
+
+        self.combo_orden.current(0)
+
+        self.combo_orden.pack(
+            pady=(0, 15)
+        )
+
+        # =====================================
+        # BUTTON CREATOR
+        # =====================================
+
+        def crear_boton(texto, comando, color):
+
+            boton = tk.Button(
+
+                sidebar,
+
+                text=texto,
+
+                width=25,
+
+                height=2,
+
+                font=(
+                    "Segoe UI",
+                    10,
+                    "bold"
+                ),
+
+                bg=color,
+
+                fg="white",
+
+                activebackground="#38bdf8",
+
+                activeforeground="black",
+
+                relief="flat",
+
+                bd=0,
+
+                cursor="hand2",
+
+                command=comando
+            )
+
+            boton.pack(
+                pady=5
+            )
+
+        # =====================================
+        # BUTTONS
+        # =====================================
+
+        crear_boton(
+            "Cargar Archivo",
+            self.cargar_archivo,
+            "#0ea5e9"
+        )
+
+        crear_boton(
+            "Mezcla Directa",
+            self.ejecutar_mezcla_directa,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Intercalacion Directa",
+            self.ejecutar_intercalacion,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Mezcla Equilibrada",
+            self.ejecutar_equilibrada,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Polifase",
+            self.ejecutar_polifase,
+            "#7c3aed"
+        )
+
+        crear_boton(
+            "Comparar Externos",
+            self.ejecutar_comparador,
+            "#ea580c"
+        )
+
+        # =====================================
+        # EXPORT
+        # =====================================
+
+        exportar = tk.Label(
+
+            sidebar,
+
+            text="EXPORTAR",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#22c55e"
+        )
+
+        exportar.pack(
+            pady=(20, 10)
+        )
+
+        crear_boton(
+            "Exportar TXT",
+            self.guardar_txt,
+            "#14532d"
+        )
+
+        crear_boton(
+            "Exportar CSV",
+            self.guardar_csv,
+            "#166534"
+        )
+
+        crear_boton(
+            "Exportar Excel",
+            self.guardar_excel,
+            "#15803d"
+        )
+
+        # =====================================
+        # RIGHT PANEL
+        # =====================================
+
+        panel = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        panel.grid(
+            row=1,
+            column=1,
+            sticky="nsew",
+            padx=(5, 10),
+            pady=10
+        )
+
+        panel.grid_rowconfigure(
+            2,
+            weight=1
+        )
+
+        panel.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # INFO
+        # =====================================
+
+        info = tk.Frame(
+            panel,
+            bg="#111827",
+            height=100
+        )
+
+        info.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            pady=(0, 10)
+        )
+
+        info.grid_propagate(False)
+
+        titulo_info = tk.Label(
+
+            info,
+
+            text="INFORMACION DEL SISTEMA",
+
+            font=(
+                "Segoe UI",
+                16,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#facc15"
+        )
+
+        titulo_info.pack(
+            pady=(10, 5)
+        )
+
+        self.label_estado = tk.Label(
+
+            info,
+
+            text="Estado: Esperando archivo",
+
+            font=(
+                "Segoe UI",
+                10
+            ),
+
+            bg="#111827",
+
+            fg="white"
+        )
+
+        self.label_estado.pack()
+
+        # =====================================
+        # DASHBOARD
+        # =====================================
+
+        dashboard = tk.Frame(
+            panel,
+            bg="#020617"
+        )
+
+        dashboard.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            pady=(0, 10)
+        )
+
+        for i in range(4):
+
+            dashboard.grid_columnconfigure(
+                i,
+                weight=1,
+                uniform="col"
+            )
+
+        def crear_card(
+            row,
+            column,
+            titulo,
+            color
+        ):
+
+            card = tk.Frame(
+                dashboard,
+                bg="#111827",
+                height=120
+            )
+
+            card.grid(
+                row=row,
+                column=column,
+                padx=10,
+                pady=10,
+                sticky="nsew"
+            )
+
+            card.grid_propagate(False)
+
+            titulo_label = tk.Label(
+
+                card,
+
+                text=titulo,
+
+                font=(
+                    "Segoe UI",
+                    11,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg=color
+            )
+
+            titulo_label.pack(
+                pady=(18, 8)
+            )
+
+            valor = tk.Label(
+
+                card,
+
+                text="---",
+
+                font=(
+                    "Segoe UI",
+                    18,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg="white"
+            )
+
+            valor.pack()
+
+            return valor
+
+        self.card_algoritmo = crear_card(
+            0,
+            0,
+            "ALGORITMO",
+            "#38bdf8"
+        )
+
+        self.card_tiempo = crear_card(
+            0,
+            1,
+            "TIEMPO",
+            "#22c55e"
+        )
+
+        self.card_datos = crear_card(
+            0,
+            2,
+            "DATOS",
+            "#f97316"
+        )
+
+        self.card_tipo = crear_card(
+            0,
+            3,
+            "TIPO",
+            "#a855f7"
+        )
+
+        # =====================================
+        # CONSOLE
+        # =====================================
+
+        consola = tk.Frame(
+            panel,
+            bg="#111827"
+        )
+
+        consola.grid(
+            row=2,
+            column=0,
+            sticky="nsew"
+        )
+
+        titulo_consola = tk.Label(
+
+            consola,
+
+            text="CONSOLA DE EJECUCION",
+
+            font=(
+                "Segoe UI",
+                16,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#22c55e"
+        )
+
+        titulo_consola.pack(
+            pady=15
+        )
+
+        self.area_consola = tk.Text(
+
+            consola,
+
+            bg="#020617",
+
+            fg="#22c55e",
+
+            font=(
+                "Consolas",
+                11
+            ),
+
+            relief="flat",
+
+            insertbackground="white",
+
+            padx=15,
+
+            pady=15
+        )
+
+        self.area_consola.pack(
+            expand=True,
+            fill="both",
+            padx=15,
+            pady=(0, 15)
+        )
+
+    # =====================================
+    # LOG
+    # =====================================
+
+    def log(self, texto):
+
+        self.area_consola.insert(
+            tk.END,
+            texto + "\n"
+        )
+
+        self.area_consola.see(
+            tk.END
+        )
+
+    # =====================================
+    # LOAD FILE
+    # =====================================
+
+    def cargar_archivo(self):
+
+        ruta = filedialog.askopenfilename(
+
+            title="Seleccionar Archivo",
+
+            filetypes=[
+                ("TXT", "*.txt"),
+                ("Excel", "*.xlsx"),
+                ("Todos", "*.*")
+            ]
+        )
+
+        if ruta:
+
+            self.ruta_archivo = ruta
+
+            self.label_estado.config(
+                text=f"Archivo cargado"
+            )
+
+            self.log(
+                f"\nArchivo cargado:\n{ruta}\n"
+            )
+
+    # =====================================
+    # UPDATE DASHBOARD
+    # =====================================
+
+    def actualizar_dashboard(
+
+        self,
+        algoritmo,
+        tiempo,
+        cantidad
+    ):
+
+        self.card_algoritmo.config(
+            text=algoritmo
+        )
+
+        self.card_tiempo.config(
+            text=f"{tiempo:.6f}s"
+        )
+
+        self.card_datos.config(
+            text=str(cantidad)
+        )
+
+        self.card_tipo.config(
+            text="EXTERNO"
+        )
+
+    # =====================================
+    # MOSTRAR RESUMEN
+    # =====================================
+
+    def mostrar_resumen(self, resultado):
+
+        self.log(
+            "\n========== RESUMEN ==========\n"
+        )
+
+        self.log(
+            f"Total registros: {len(resultado)}"
+        )
+
+        self.log(
+            f"\nPrimeros 20:\n{resultado[:20]}"
+        )
+
+        self.log(
+            f"\nUltimos 20:\n{resultado[-20:]}"
+        )
+
+    # =====================================
+    # EXECUTION GENERIC
+    # =====================================
+
+    def ejecutar_algoritmo(
+
+        self,
+        funcion,
+        nombre
+    ):
+
+        if not self.ruta_archivo:
+
+            messagebox.showerror(
+                "Error",
+                "Carga un archivo primero."
+            )
+
+            return
+
+        inicio = time.perf_counter()
+
+        resultado, logs = funcion(
+            self.ruta_archivo
+        )
+
+        # =================================
+        # DESCENDENTE
+        # =================================
+
+        if self.combo_orden.get() == "Descendente":
+
+            resultado.reverse()
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        self.resultado_actual = resultado
+
+        self.algoritmo_actual = nombre
+
+        self.tiempo_actual = tiempo
+
+        self.area_consola.delete(
+            "1.0",
+            tk.END
+        )
+
+        for linea in logs:
+
+            self.log(
+                str(linea)
+            )
+
+        self.mostrar_resumen(
+            resultado
+        )
+
+        self.actualizar_dashboard(
+            nombre,
+            tiempo,
+            len(resultado)
+        )
+
+        guardar_ejecucion(
+            "EXTERNO",
+            nombre,
+            len(resultado),
+            tiempo
+        )
+
+    # =====================================
+    # ALGORITHMS
+    # =====================================
+
+    def ejecutar_mezcla_directa(self):
+
+        self.ejecutar_algoritmo(
+            mezcla_directa,
+            "Mezcla Directa"
+        )
+
+    def ejecutar_intercalacion(self):
+
+        self.ejecutar_algoritmo(
+            intercalacion_directa,
+            "Intercalacion"
+        )
+
+    def ejecutar_equilibrada(self):
+
+        self.ejecutar_algoritmo(
+            mezcla_equilibrada,
+            "Equilibrada"
+        )
+
+    def ejecutar_polifase(self):
+
+        self.ejecutar_algoritmo(
+            polifase,
+            "Polifase"
+        )
+
+    # =====================================
+    # COMPARATOR
+    # =====================================
+
+    def ejecutar_comparador(self):
+
+        if not self.ruta_archivo:
+
+            messagebox.showerror(
+                "Error",
+                "Carga un archivo primero."
+            )
+
+            return
+
+        resultados = comparar_externos(
+            self.ruta_archivo
+        )
+
+        self.log(
+            "\n========== COMPARADOR ==========\n"
+        )
+
+        for algoritmo, tiempo in resultados:
+
+            self.log(
+                f"{algoritmo}: {tiempo:.6f}s"
+            )
+
+    # =====================================
+    # EXPORT
+    # =====================================
+
+    def guardar_txt(self):
+
+        if self.resultado_actual:
+
+            exportar_txt(
+                self.resultado_actual
+            )
+
+            self.log(
+                f"\nAlgoritmo: {self.algoritmo_actual}"
+            )
+
+            self.log(
+                f"Tiempo: {self.tiempo_actual:.6f}s"
+            )
+
+    def guardar_csv(self):
+
+        if self.resultado_actual:
+
+            exportar_csv(
+                self.resultado_actual
+            )
+
+    def guardar_excel(self):
+
+        if self.resultado_actual:
+
+            exportar_excel(
+                self.resultado_actual
+            )
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = InterfazExterna(root)
+
+    root.mainloop()
