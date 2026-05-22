@@ -1,0 +1,261 @@
+import time
+
+
+# ============================================
+# BUBBLE SORT
+# ============================================
+
+def bubble_sort(datos):
+
+    arr = datos.copy()
+
+    n = len(arr)
+
+    for i in range(n):
+
+        for j in range(0, n - i - 1):
+
+            if arr[j] > arr[j + 1]:
+
+                arr[j], arr[j + 1] = (
+                    arr[j + 1],
+                    arr[j]
+                )
+
+    return arr
+
+
+# ============================================
+# SELECTION SORT
+# ============================================
+
+def selection_sort(datos):
+
+    arr = datos.copy()
+
+    n = len(arr)
+
+    for i in range(n):
+
+        minimo = i
+
+        for j in range(i + 1, n):
+
+            if arr[j] < arr[minimo]:
+
+                minimo = j
+
+        arr[i], arr[minimo] = (
+            arr[minimo],
+            arr[i]
+        )
+
+    return arr
+
+
+# ============================================
+# INSERTION SORT
+# ============================================
+
+def insertion_sort(datos):
+
+    arr = datos.copy()
+
+    for i in range(1, len(arr)):
+
+        clave = arr[i]
+
+        j = i - 1
+
+        while j >= 0 and arr[j] > clave:
+
+            arr[j + 1] = arr[j]
+
+            j -= 1
+
+        arr[j + 1] = clave
+
+    return arr
+
+
+# ============================================
+# QUICK SORT
+# ============================================
+
+def quick_sort(arr):
+
+    if len(arr) <= 1:
+
+        return arr
+
+    pivote = arr[len(arr) // 2]
+
+    izquierda = [
+        x for x in arr
+        if x < pivote
+    ]
+
+    centro = [
+        x for x in arr
+        if x == pivote
+    ]
+
+    derecha = [
+        x for x in arr
+        if x > pivote
+    ]
+
+    return (
+        quick_sort(izquierda)
+        + centro
+        + quick_sort(derecha)
+    )
+
+
+# ============================================
+# HEAP SORT
+# ============================================
+
+def heap_sort(datos):
+
+    import heapq
+
+    arr = datos.copy()
+
+    heapq.heapify(arr)
+
+    return [
+        heapq.heappop(arr)
+        for _ in range(len(arr))
+    ]
+
+
+# ============================================
+# SHELL SORT
+# ============================================
+
+def shell_sort(datos):
+
+    arr = datos.copy()
+
+    n = len(arr)
+
+    gap = n // 2
+
+    while gap > 0:
+
+        for i in range(gap, n):
+
+            temp = arr[i]
+
+            j = i
+
+            while j >= gap and arr[j - gap] > temp:
+
+                arr[j] = arr[j - gap]
+
+                j -= gap
+
+            arr[j] = temp
+
+        gap //= 2
+
+    return arr
+
+
+# ============================================
+# RADIX SORT
+# ============================================
+
+def radix_sort(datos):
+
+    arr = datos.copy()
+
+    maximo = max(arr)
+
+    exp = 1
+
+    while maximo // exp > 0:
+
+        counting_sort(arr, exp)
+
+        exp *= 10
+
+    return arr
+
+
+def counting_sort(arr, exp):
+
+    n = len(arr)
+
+    salida = [0] * n
+
+    conteo = [0] * 10
+
+    for i in range(n):
+
+        indice = arr[i] // exp
+
+        conteo[indice % 10] += 1
+
+    for i in range(1, 10):
+
+        conteo[i] += conteo[i - 1]
+
+    i = n - 1
+
+    while i >= 0:
+
+        indice = arr[i] // exp
+
+        salida[conteo[indice % 10] - 1] = arr[i]
+
+        conteo[indice % 10] -= 1
+
+        i -= 1
+
+    for i in range(n):
+
+        arr[i] = salida[i]
+
+
+# ============================================
+# MEDIR TIEMPOS
+# ============================================
+
+def medir_tiempos(datos):
+
+    resultados = {}
+
+    algoritmos = {
+
+        "Bubble": bubble_sort,
+
+        "Selection": selection_sort,
+
+        "Insertion": insertion_sort,
+
+        "Quick": quick_sort,
+
+        "Heap": heap_sort,
+
+        "Shell": shell_sort,
+
+        "Radix": radix_sort
+    }
+
+    for nombre, funcion in algoritmos.items():
+
+        copia = datos.copy()
+
+        inicio = time.perf_counter()
+
+        funcion(copia)
+
+        fin = time.perf_counter()
+
+        resultados[nombre] = (
+            fin - inicio
+        )
+
+    return resultados
