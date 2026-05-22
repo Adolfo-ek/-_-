@@ -1,0 +1,44 @@
+from utilidades.normalizador import (
+    normalizar_lista
+)
+
+
+# =========================================
+# LEER TXT
+# =========================================
+
+def leer_txt(ruta):
+
+    try:
+
+        with open(
+
+            ruta,
+
+            "r",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            contenido = archivo.read()
+
+        # =====================================
+        # LIMPIAR
+        # =====================================
+
+        contenido = contenido.replace(
+            ",",
+            " "
+        )
+
+        contenido = contenido.replace(
+            "\n",
+            " "
+        )
+
+        datos = contenido.split()
+
+        return normalizar_lista(
+            datos
+        )
