@@ -1,0 +1,58 @@
+import json
+
+from utilidades.normalizador import (
+    normalizar_lista
+)
+
+
+# =========================================
+# LEER JSON
+# =========================================
+
+def leer_json(ruta):
+
+    try:
+
+        with open(
+
+            ruta,
+
+            "r",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            datos = json.load(
+                archivo
+            )
+
+        resultado = []
+
+        # =====================================
+        # LISTA
+        # =====================================
+
+        if isinstance(
+            datos,
+            list
+        ):
+
+            resultado = datos
+
+        # =====================================
+        # DICCIONARIO
+        # =====================================
+
+        elif isinstance(
+            datos,
+            dict
+        ):
+
+            resultado = list(
+                datos.values()
+            )
+
+        return normalizar_lista(
+            resultado
+        )
