@@ -1,0 +1,39 @@
+# =========================================
+# OBTENER CLAVE DE COMPARACION
+# =========================================
+
+def obtener_clave(valor):
+
+    # =====================================
+    # NUMEROS
+    # =====================================
+
+    if isinstance(
+        valor,
+        (int, float)
+    ):
+
+        return (0, valor)
+
+    # =====================================
+    # TEXTO
+    # =====================================
+
+    return (
+        1,
+        str(valor).lower()
+    )
+
+
+# =========================================
+# COMPARAR
+# =========================================
+
+def menor(a, b):
+
+    return obtener_clave(a) < obtener_clave(b)
+
+
+def mayor(a, b):
+
+    return obtener_clave(a) > obtener_clave(b)
