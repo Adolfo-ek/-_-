@@ -1,0 +1,348 @@
+import os
+
+
+# =========================================
+# LEER ARCHIVO UNIVERSAL
+# =========================================
+
+def leer_archivo(ruta):
+
+    from archivos.leer_txt import leer_txt
+    from archivos.leer_csv import leer_csv
+    from archivos.leer_excel import leer_excel
+    from archivos.leer_json import leer_json
+    from archivos.leer_word import leer_word
+
+    if ruta.endswith(".txt"):
+
+        datos = leer_txt(ruta)
+
+    elif ruta.endswith(".csv"):
+
+        datos = leer_csv(ruta)
+
+    elif ruta.endswith(".xlsx"):
+
+        datos = leer_excel(ruta)
+
+    elif ruta.endswith(".json"):
+
+        datos = leer_json(ruta)
+
+    elif ruta.endswith(".docx"):
+
+        datos = leer_word(ruta)
+
+    else:
+
+        raise ValueError(
+            "Formato no soportado"
+        )
+
+    resultado = []
+
+    for dato in datos:
+
+        try:
+
+            resultado.append(
+                int(float(dato))
+            )
+
+        except:
+            pass
+
+    return resultado
+
+
+# =========================================
+# ESCRIBIR ARCHIVO
+# =========================================
+
+def escribir_archivo(ruta, datos):
+
+    with open(
+        ruta,
+        "w",
+        encoding="utf-8"
+    ) as archivo:
+
+        for numero in datos:
+
+            archivo.write(
+                f"{numero}\n"
+            )
+
+
+# =========================================
+# MERGE SORT
+# =========================================
+
+def merge_sort(lista, logs):
+
+    if len(lista) <= 1:
+
+        return lista
+
+    mitad = len(lista) // 2
+
+    izquierda = lista[:mitad]
+
+    derecha = lista[mitad:]
+
+    izquierda = merge_sort(
+        izquierda,
+        logs
+    )
+
+    derecha = merge_sort(
+        derecha,
+        logs
+    )
+
+    return intercalar(
+        izquierda,
+        derecha,
+        logs
+    )
+
+
+# =========================================
+# CREAR SUBLISTAS
+# =========================================
+
+def crear_sublistas(datos, tamaño, logs):
+
+    sublistas = []
+
+    logs.append(
+        "\n========== SUBLISTAS ==========\n"
+    )
+
+    for i in range(
+        0,
+        len(datos),
+        tamaño
+    ):
+
+        sublista = datos[i:i + tamaño]
+
+        sublista_ordenada = merge_sort(
+            sublista,
+            logs
+        )
+
+        sublistas.append(
+            sublista_ordenada
+        )
+
+        logs.append(
+            f"Sublista {len(sublistas)}: {sublista_ordenada}"
+        )
+
+    return sublistas
+
+
+# =========================================
+# INTERCALAR
+# =========================================
+
+def intercalar(lista1, lista2, logs):
+
+    resultado = []
+
+    i = 0
+    j = 0
+
+    logs.append(
+        "\nFusionando:"
+    )
+
+    logs.append(
+        str(lista1)
+    )
+
+    logs.append(
+        str(lista2)
+    )
+
+    while i < len(lista1) and j < len(lista2):
+
+        if lista1[i] <= lista2[j]:
+
+            resultado.append(
+                lista1[i]
+            )
+
+            i += 1
+
+        else:
+
+            resultado.append(
+                lista2[j]
+            )
+
+            j += 1
+
+    while i < len(lista1):
+
+        resultado.append(
+            lista1[i]
+        )
+
+        i += 1
+
+    while j < len(lista2):
+
+        resultado.append(
+            lista2[j]
+        )
+
+        j += 1
+
+    logs.append(
+        f"Resultado fusion: {resultado}\n"
+    )
+
+    return resultado
+
+
+# =========================================
+# INTERCALAR TODAS
+# =========================================
+
+def intercalar_todas(sublistas, logs):
+
+    fase = 1
+
+    while len(sublistas) > 1:
+
+        logs.append(
+            f"\n========== FASE {fase} ==========\n"
+        )
+
+        nuevas = []
+
+        for i in range(
+            0,
+            len(sublistas),
+            2
+        ):
+
+            if i + 1 < len(sublistas):
+
+                fusion = intercalar(
+                    sublistas[i],
+                    sublistas[i + 1],
+                    logs
+                )
+
+                nuevas.append(
+                    fusion
+                )
+
+            else:
+
+                nuevas.append(
+                    sublistas[i]
+                )
+
+        sublistas = nuevas
+
+        fase += 1
+
+    return sublistas[0]
+
+
+# =========================================
+# INTERCALACION DIRECTA
+# =========================================
+
+def intercalacion_directa(ruta_archivo):
+
+    logs = []
+
+    logs.append(
+        "\n======================================"
+    )
+
+    logs.append(
+        "       INTERCALACION DIRECTA"
+    )
+
+    logs.append(
+        "======================================"
+    )
+
+    datos = leer_archivo(
+        ruta_archivo
+    )
+
+    logs.append(
+        "\nDatos originales:\n"
+    )
+
+    logs.append(
+        str(datos)
+    )
+
+    tamaño_sublista = 2
+
+    sublistas = crear_sublistas(
+        datos,
+        tamaño_sublista,
+        logs
+    )
+
+    resultado = intercalar_todas(
+        sublistas,
+        logs
+    )
+
+    logs.append(
+        "\n========== RESULTADO FINAL ==========\n"
+    )
+
+    logs.append(
+        str(resultado)
+    )
+
+    ruta_salida = (
+        "resultado_intercalacion.txt"
+    )
+
+    escribir_archivo(
+        ruta_salida,
+        resultado
+    )
+
+    logs.append(
+        f"\nArchivo generado: {ruta_salida}"
+    )
+
+    return resultado, logs
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    ruta = "datos.txt"
+
+    if os.path.exists(ruta):
+
+        resultado, logs = intercalacion_directa(
+            ruta
+        )
+
+        for linea in logs:
+
+            print(linea)
+
+    else:
+
+        print(
+            "\nNo existe datos.txt\n"
+        )
