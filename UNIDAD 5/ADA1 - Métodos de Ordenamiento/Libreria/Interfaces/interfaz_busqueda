@@ -1,0 +1,753 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from tkinter import filedialog
+
+import time
+import matplotlib.pyplot as plt
+
+from busqueda.busqueda_secuencial import (
+    busqueda_secuencial
+)
+
+from busqueda.busqueda_binaria import (
+    busqueda_binaria
+)
+
+from busqueda.tabla_hash import (
+    TablaHash
+)
+
+# =========================================
+# LECTORES
+# =========================================
+
+from archivos.leer_txt import leer_txt
+from archivos.leer_csv import leer_csv
+from archivos.leer_excel import leer_excel
+from archivos.leer_json import leer_json
+from archivos.leer_word import leer_word
+
+
+class InterfazBusquedas:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        self.datos_cargados = []
+
+        self.posiciones = []
+
+        self.tiempos = []
+
+        # =====================================
+        # CONFIG
+        # =====================================
+
+        self.root.title(
+            "Sistema de Busquedas"
+        )
+
+        self.root.geometry(
+            "1600x950"
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        # =====================================
+        # HEADER
+        # =====================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=120
+        )
+
+        header.pack(
+            fill="x"
+        )
+
+        header.pack_propagate(False)
+
+        titulo = tk.Label(
+
+            header,
+
+            text="SISTEMA PROFESIONAL DE BUSQUEDAS",
+
+            font=(
+                "Segoe UI",
+                30,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        titulo.pack(
+            pady=(20, 5)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Busqueda Secuencial • Binaria • Hash",
+
+            font=(
+                "Segoe UI",
+                13
+            ),
+
+            bg="#0f172a",
+
+            fg="white"
+        )
+
+        subtitulo.pack()
+
+        # =====================================
+        # MAIN
+        # =====================================
+
+        main = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        main.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=20
+        )
+
+        # =====================================
+        # INPUTS
+        # =====================================
+
+        frame_inputs = tk.Frame(
+            main,
+            bg="#111827"
+        )
+
+        frame_inputs.pack(
+            fill="x",
+            pady=(0, 20)
+        )
+
+        # =====================================
+        # DATOS
+        # =====================================
+
+        tk.Label(
+
+            frame_inputs,
+
+            text="Datos:",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="white"
+
+        ).grid(
+            row=0,
+            column=0,
+            padx=10,
+            pady=15
+        )
+
+        self.entry_datos = tk.Entry(
+
+            frame_inputs,
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            width=80
+        )
+
+        self.entry_datos.grid(
+            row=0,
+            column=1,
+            padx=10
+        )
+
+        # =====================================
+        # OBJETIVO
+        # =====================================
+
+        tk.Label(
+
+            frame_inputs,
+
+            text="Buscar:",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="white"
+
+        ).grid(
+            row=1,
+            column=0,
+            padx=10,
+            pady=15
+        )
+
+        self.entry_objetivo = tk.Entry(
+
+            frame_inputs,
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            width=30
+        )
+
+        self.entry_objetivo.grid(
+            row=1,
+            column=1,
+            sticky="w",
+            padx=10
+        )
+
+        # =====================================
+        # BOTONES
+        # =====================================
+
+        frame_botones = tk.Frame(
+            main,
+            bg="#020617"
+        )
+
+        frame_botones.pack(
+            pady=(0, 20)
+        )
+
+        botones = [
+
+            (
+                "📂 Cargar Archivo",
+                self.cargar_archivo,
+                "#06b6d4"
+            ),
+
+            (
+                "Secuencial",
+                self.ejecutar_secuencial,
+                "#38bdf8"
+            ),
+
+            (
+                "Binaria",
+                self.ejecutar_binaria,
+                "#22c55e"
+            ),
+
+            (
+                "Hash",
+                self.ejecutar_hash,
+                "#f97316"
+            ),
+
+            (
+                "📈 Graficas",
+                self.graficar,
+                "#a855f7"
+            )
+        ]
+
+        for texto, comando, color in botones:
+
+            boton = tk.Button(
+
+                frame_botones,
+
+                text=texto,
+
+                font=(
+                    "Segoe UI",
+                    11,
+                    "bold"
+                ),
+
+                bg=color,
+
+                fg="black",
+
+                relief="flat",
+
+                padx=18,
+
+                pady=12,
+
+                command=comando
+            )
+
+            boton.pack(
+                side="left",
+                padx=10
+            )
+
+        # =====================================
+        # RESULTADOS
+        # =====================================
+
+        frame_resultados = tk.Frame(
+            main,
+            bg="#111827"
+        )
+
+        frame_resultados.pack(
+            fill="both",
+            expand=True
+        )
+
+        titulo_logs = tk.Label(
+
+            frame_resultados,
+
+            text="RESULTADOS Y PASOS",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#22c55e"
+        )
+
+        titulo_logs.pack(
+            pady=15
+        )
+
+        self.texto = tk.Text(
+
+            frame_resultados,
+
+            font=(
+                "Consolas",
+                11
+            ),
+
+            bg="#020617",
+
+            fg="white"
+        )
+
+        self.texto.pack(
+            fill="both",
+            expand=True,
+            padx=15,
+            pady=(0, 15)
+        )
+
+    # =====================================
+    # CARGAR ARCHIVO
+    # =====================================
+
+    def cargar_archivo(self):
+
+        ruta = filedialog.askopenfilename(
+
+            title="Seleccionar archivo",
+
+            filetypes=[
+
+                ("Todos", "*.txt *.csv *.xlsx *.json *.docx"),
+
+                ("TXT", "*.txt"),
+
+                ("CSV", "*.csv"),
+
+                ("Excel", "*.xlsx"),
+
+                ("JSON", "*.json"),
+
+                ("Word", "*.docx")
+            ]
+        )
+
+        if not ruta:
+
+            return
+
+        try:
+
+            if ruta.endswith(".txt"):
+
+                datos = leer_txt(ruta)
+
+            elif ruta.endswith(".csv"):
+
+                datos = leer_csv(ruta)
+
+            elif ruta.endswith(".xlsx"):
+
+                datos = leer_excel(ruta)
+
+            elif ruta.endswith(".json"):
+
+                datos = leer_json(ruta)
+
+            elif ruta.endswith(".docx"):
+
+                datos = leer_word(ruta)
+
+            else:
+
+                messagebox.showerror(
+                    "Error",
+                    "Formato no soportado"
+                )
+
+                return
+
+            self.datos_cargados = [
+
+                int(float(x))
+
+                for x in datos
+            ]
+
+            self.entry_datos.delete(
+                0,
+                tk.END
+            )
+
+            self.entry_datos.insert(
+                0,
+                str(self.datos_cargados)
+            )
+
+            messagebox.showinfo(
+                "Exito",
+                "Archivo cargado correctamente."
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Error",
+                str(e)
+            )
+
+    # =====================================
+    # OBTENER DATOS
+    # =====================================
+
+    def obtener_datos(self):
+
+        if self.datos_cargados:
+
+            return self.datos_cargados
+
+        datos = self.entry_datos.get()
+
+        try:
+
+            lista = [
+
+                int(x.strip())
+
+                for x in datos.split(",")
+            ]
+
+            return lista
+
+        except:
+
+            messagebox.showerror(
+                "Error",
+                "Datos invalidos."
+            )
+
+            return None
+
+    # =====================================
+    # LIMPIAR
+    # =====================================
+
+    def limpiar(self):
+
+        self.texto.delete(
+            "1.0",
+            tk.END
+        )
+
+    # =====================================
+    # MOSTRAR
+    # =====================================
+
+    def mostrar_pasos(self, pasos):
+
+        self.limpiar()
+
+        for paso in pasos:
+
+            self.texto.insert(
+                tk.END,
+                paso + "\n"
+            )
+
+    # =====================================
+    # SECUENCIAL
+    # =====================================
+
+    def ejecutar_secuencial(self):
+
+        lista = self.obtener_datos()
+
+        if lista is None:
+
+            return
+
+        objetivo = int(
+            self.entry_objetivo.get()
+        )
+
+        inicio = time.time()
+
+        posicion, pasos = busqueda_secuencial(
+            lista,
+            objetivo
+        )
+
+        fin = time.time()
+
+        tiempo = fin - inicio
+
+        self.posiciones.append(
+            len(lista)
+        )
+
+        self.tiempos.append(
+            tiempo
+        )
+
+        pasos.append(
+            f"\nTiempo: {tiempo:.8f} segundos"
+        )
+
+        self.mostrar_pasos(
+            pasos
+        )
+
+    # =====================================
+    # BINARIA
+    # =====================================
+
+    def ejecutar_binaria(self):
+
+        lista = self.obtener_datos()
+
+        if lista is None:
+
+            return
+
+        lista.sort()
+
+        objetivo = int(
+            self.entry_objetivo.get()
+        )
+
+        inicio = time.time()
+
+        posicion, pasos = busqueda_binaria(
+            lista,
+            objetivo
+        )
+
+        fin = time.time()
+
+        tiempo = fin - inicio
+
+        self.posiciones.append(
+            len(lista)
+        )
+
+        self.tiempos.append(
+            tiempo
+        )
+
+        pasos.append(
+            f"\nTiempo: {tiempo:.8f} segundos"
+        )
+
+        self.mostrar_pasos(
+            pasos
+        )
+
+    # =====================================
+    # HASH
+    # =====================================
+
+    def ejecutar_hash(self):
+
+        lista = self.obtener_datos()
+
+        if lista is None:
+
+            return
+
+        objetivo = int(
+            self.entry_objetivo.get()
+        )
+
+        tabla = TablaHash()
+
+        for dato in lista:
+
+            tabla.insertar(
+                dato
+            )
+
+        inicio = time.time()
+
+        encontrado, pasos = tabla.buscar(
+            objetivo
+        )
+
+        fin = time.time()
+
+        tiempo = fin - inicio
+
+        self.posiciones.append(
+            len(lista)
+        )
+
+        self.tiempos.append(
+            tiempo
+        )
+
+        pasos.append(
+            f"\nTiempo: {tiempo:.8f} segundos"
+        )
+
+        self.mostrar_pasos(
+            pasos
+        )
+
+    # =====================================
+    # GRAFICAS
+    # =====================================
+
+    def graficar(self):
+
+        if not self.posiciones:
+
+            messagebox.showwarning(
+                "Advertencia",
+                "No hay datos para graficar."
+            )
+
+            return
+
+        # ================================
+        # GRAFICA POSICIONES
+        # ================================
+
+        plt.figure(
+            figsize=(8, 5)
+        )
+
+        plt.plot(
+            self.posiciones,
+            marker="o"
+        )
+
+        plt.title(
+            "Cantidad de Datos"
+        )
+
+        plt.xlabel(
+            "Ejecuciones"
+        )
+
+        plt.ylabel(
+            "Cantidad"
+        )
+
+        plt.grid(True)
+
+        plt.savefig(
+            "grafica_posiciones_busquedas.png"
+        )
+
+        plt.show()
+
+        # ================================
+        # GRAFICA TIEMPOS
+        # ================================
+
+        plt.figure(
+            figsize=(8, 5)
+        )
+
+        plt.plot(
+            self.tiempos,
+            marker="o"
+        )
+
+        plt.title(
+            "Tiempo de Ejecucion"
+        )
+
+        plt.xlabel(
+            "Ejecuciones"
+        )
+
+        plt.ylabel(
+            "Segundos"
+        )
+
+        plt.grid(True)
+
+        plt.savefig(
+            "grafica_tiempos_busquedas.png"
+        )
+
+        plt.show()
+
+        messagebox.showinfo(
+            "Exito",
+            "Graficas exportadas correctamente."
+        )
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = InterfazBusquedas(root)
+
+    root.mainloop()
