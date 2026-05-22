@@ -1,0 +1,551 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+from utilidades.benchmark import (
+    ejecutar_benchmark
+)
+
+from utilidades.grafica_benchmark import (
+    mostrar_grafica_benchmark
+)
+
+
+class InterfazBenchmark:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # =====================================
+        # CONFIG
+        # =====================================
+
+        self.root.title(
+            "Benchmark Professional"
+        )
+
+        self.root.geometry(
+            "1600x950"
+        )
+
+        self.root.minsize(
+            1300,
+            800
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        # =====================================
+        # GRID
+        # =====================================
+
+        self.root.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # HEADER
+        # =====================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=110
+        )
+
+        header.grid(
+            row=0,
+            column=0,
+            sticky="ew"
+        )
+
+        header.grid_propagate(False)
+
+        titulo = tk.Label(
+
+            header,
+
+            text="BENCHMARK PROFESSIONAL",
+
+            font=(
+                "Segoe UI",
+                32,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        titulo.pack(
+            pady=(20, 5)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Sistema Profesional de Analisis de Rendimiento",
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            bg="#0f172a",
+
+            fg="#cbd5e1"
+        )
+
+        subtitulo.pack()
+
+        # =====================================
+        # MAIN
+        # =====================================
+
+        main = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        main.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=25,
+            pady=25
+        )
+
+        main.grid_rowconfigure(
+            2,
+            weight=1
+        )
+
+        main.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # CONTROL PANEL
+        # =====================================
+
+        control = tk.Frame(
+            main,
+            bg="#111827",
+            height=130
+        )
+
+        control.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            pady=(0, 20)
+        )
+
+        control.grid_propagate(False)
+
+        titulo_control = tk.Label(
+
+            control,
+
+            text="CONFIGURACION BENCHMARK",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#facc15"
+        )
+
+        titulo_control.pack(
+            pady=(15, 10)
+        )
+
+        frame_input = tk.Frame(
+            control,
+            bg="#111827"
+        )
+
+        frame_input.pack()
+
+        label = tk.Label(
+
+            frame_input,
+
+            text="Cantidad de Datos:",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="white"
+        )
+
+        label.grid(
+            row=0,
+            column=0,
+            padx=10
+        )
+
+        self.entry_cantidad = tk.Entry(
+
+            frame_input,
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            width=15,
+
+            justify="center"
+        )
+
+        self.entry_cantidad.insert(
+            0,
+            "1000"
+        )
+
+        self.entry_cantidad.grid(
+            row=0,
+            column=1,
+            padx=10
+        )
+
+        boton = tk.Button(
+
+            frame_input,
+
+            text="EJECUTAR BENCHMARK",
+
+            font=(
+                "Segoe UI",
+                11,
+                "bold"
+            ),
+
+            bg="#38bdf8",
+
+            fg="black",
+
+            relief="flat",
+
+            cursor="hand2",
+
+            padx=20,
+
+            pady=8,
+
+            command=self.iniciar_benchmark
+        )
+
+        boton.grid(
+            row=0,
+            column=2,
+            padx=20
+        )
+
+        # =====================================
+        # DASHBOARD
+        # =====================================
+
+        dashboard = tk.Frame(
+            main,
+            bg="#020617"
+        )
+
+        dashboard.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            pady=(0, 20)
+        )
+
+        for i in range(3):
+
+            dashboard.grid_columnconfigure(
+                i,
+                weight=1,
+                uniform="col"
+            )
+
+        def crear_card(titulo, color):
+
+            card = tk.Frame(
+                dashboard,
+                bg="#111827",
+                height=120
+            )
+
+            card.grid_propagate(False)
+
+            titulo_label = tk.Label(
+
+                card,
+
+                text=titulo,
+
+                font=(
+                    "Segoe UI",
+                    12,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg=color
+            )
+
+            titulo_label.pack(
+                pady=(20, 8)
+            )
+
+            valor = tk.Label(
+
+                card,
+
+                text="---",
+
+                font=(
+                    "Segoe UI",
+                    18,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg="white"
+            )
+
+            valor.pack()
+
+            return card, valor
+
+        card1, self.card_mejor = crear_card(
+            "MAS RAPIDO",
+            "#22c55e"
+        )
+
+        card1.grid(
+            row=0,
+            column=0,
+            padx=10,
+            sticky="nsew"
+        )
+
+        card2, self.card_peor = crear_card(
+            "MAS LENTO",
+            "#ef4444"
+        )
+
+        card2.grid(
+            row=0,
+            column=1,
+            padx=10,
+            sticky="nsew"
+        )
+
+        card3, self.card_total = crear_card(
+            "TOTAL ALGORITMOS",
+            "#38bdf8"
+        )
+
+        card3.grid(
+            row=0,
+            column=2,
+            padx=10,
+            sticky="nsew"
+        )
+
+        # =====================================
+        # TABLE
+        # =====================================
+
+        tabla_frame = tk.Frame(
+            main,
+            bg="#111827"
+        )
+
+        tabla_frame.grid(
+            row=2,
+            column=0,
+            sticky="nsew"
+        )
+
+        titulo_tabla = tk.Label(
+
+            tabla_frame,
+
+            text="RESULTADOS BENCHMARK",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#22c55e"
+        )
+
+        titulo_tabla.pack(
+            pady=15
+        )
+
+        columnas = (
+            "Ranking",
+            "Algoritmo",
+            "Tiempo"
+        )
+
+        self.tabla = ttk.Treeview(
+
+            tabla_frame,
+
+            columns=columnas,
+
+            show="headings",
+
+            height=18
+        )
+
+        for col in columnas:
+
+            self.tabla.heading(
+                col,
+                text=col
+            )
+
+            self.tabla.column(
+                col,
+                anchor="center",
+                width=200
+            )
+
+        self.tabla.pack(
+            expand=True,
+            fill="both",
+            padx=15,
+            pady=(0, 15)
+        )
+
+    # =====================================
+    # BENCHMARK
+    # =====================================
+
+    def iniciar_benchmark(self):
+
+        try:
+
+            cantidad = int(
+                self.entry_cantidad.get()
+            )
+
+        except:
+
+            messagebox.showerror(
+                "Error",
+                "Cantidad invalida."
+            )
+
+            return
+
+        self.tabla.delete(
+            *self.tabla.get_children()
+        )
+
+        resultados = ejecutar_benchmark(
+            cantidad
+        )
+
+        if not resultados:
+
+            return
+
+        # =================================
+        # DASHBOARD
+        # =================================
+
+        mejor = resultados[0][0]
+
+        peor = resultados[-1][0]
+
+        self.card_mejor.config(
+            text=mejor
+        )
+
+        self.card_peor.config(
+            text=peor
+        )
+
+        self.card_total.config(
+            text=str(len(resultados))
+        )
+
+        # =================================
+        # TABLE
+        # =================================
+
+        for i, (algoritmo, tiempo) in enumerate(resultados):
+
+            self.tabla.insert(
+
+                "",
+
+                "end",
+
+                values=(
+
+                    i + 1,
+
+                    algoritmo,
+
+                    f"{tiempo:.6f}s"
+                )
+            )
+
+        # =================================
+        # GRAPH
+        # =================================
+
+        mostrar_grafica_benchmark(
+            resultados
+        )
+
+        messagebox.showinfo(
+            "Benchmark",
+            "Benchmark completado."
+        )
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = InterfazBenchmark(root)
+
+    root.mainloop()
