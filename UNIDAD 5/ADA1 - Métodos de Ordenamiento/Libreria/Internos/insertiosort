@@ -1,0 +1,70 @@
+# ============================================
+# LIBRERÍA DE ORDENAMIENTO POR INSERCIÓN
+# ============================================
+
+def insertion_sort(datos, ascendente=True):
+    """
+    Ordenamiento por Inserción.
+
+    Parámetros:
+    datos -> lista de elementos
+    ascendente -> True o False
+
+    Retorna:
+    lista ordenada
+    """
+
+    arr = datos.copy()
+
+    for i in range(1, len(arr)):
+
+        actual = arr[i]
+
+        j = i - 1
+
+        # Ascendente
+        if ascendente:
+
+            while j >= 0 and arr[j] > actual:
+
+                arr[j + 1] = arr[j]
+
+                j -= 1
+
+        # Descendente
+        else:
+
+            while j >= 0 and arr[j] < actual:
+
+                arr[j + 1] = arr[j]
+
+                j -= 1
+
+        arr[j + 1] = actual
+
+    return arr
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [9, 4, 7, 1, 3]
+
+    palabras = ["zorro", "abeja", "perro", "gato"]
+
+    print("\nNÚMEROS:")
+    print(insertion_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(insertion_sort(numeros, ascendente=False))
+
+    print("\nPALABRAS:")
+    print(insertion_sort(palabras))
+
+    print("\nPALABRAS DESC:")
+    print(insertion_sort(palabras, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
