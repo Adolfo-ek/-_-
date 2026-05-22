@@ -1,0 +1,113 @@
+import matplotlib.pyplot as plt
+
+
+# =========================================
+# MOSTRAR GRAFICA BENCHMARK
+# =========================================
+
+def mostrar_grafica_benchmark(resultados):
+
+    if not resultados:
+
+        return
+
+    algoritmos = [
+
+        r[0]
+
+        for r in resultados
+    ]
+
+    tiempos = [
+
+        r[1]
+
+        for r in resultados
+    ]
+
+    # =====================================
+    # CLOSE OLD
+    # =====================================
+
+    plt.close('all')
+
+    # =====================================
+    # FIGURE
+    # =====================================
+
+    fig, ax = plt.subplots(
+        figsize=(12, 6)
+    )
+
+    barras = ax.bar(
+
+        algoritmos,
+
+        tiempos
+    )
+
+    # =====================================
+    # TITLES
+    # =====================================
+
+    ax.set_title(
+
+        "Benchmark Profesional",
+
+        fontsize=18,
+
+        fontweight="bold"
+    )
+
+    ax.set_ylabel(
+        "Tiempo (segundos)"
+    )
+
+    ax.set_xlabel(
+        "Algoritmos"
+    )
+
+    # =====================================
+    # VALUES
+    # =====================================
+
+    for barra, tiempo in zip(barras, tiempos):
+
+        altura = barra.get_height()
+
+        ax.text(
+
+            barra.get_x() + barra.get_width() / 2,
+
+            altura,
+
+            f"{tiempo:.6f}s",
+
+            ha='center',
+
+            va='bottom',
+
+            fontsize=9
+        )
+
+    # =====================================
+    # GRID
+    # =====================================
+
+    ax.grid(
+        axis='y',
+        linestyle='--',
+        alpha=0.5
+    )
+
+    # =====================================
+    # ROTATE
+    # =====================================
+
+    plt.xticks(
+        rotation=15
+    )
+
+    plt.tight_layout()
+
+    plt.show()
