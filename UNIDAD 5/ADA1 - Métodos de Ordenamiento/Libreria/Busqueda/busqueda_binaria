@@ -1,0 +1,65 @@
+# =========================================
+# BUSQUEDA BINARIA
+# =========================================
+
+def busqueda_binaria(lista, objetivo):
+
+    pasos = []
+
+    izquierda = 0
+
+    derecha = len(lista) - 1
+
+    while izquierda <= derecha:
+
+        medio = (izquierda + derecha) // 2
+
+        pasos.append(
+            f"Centro: {lista[medio]}"
+        )
+
+        if lista[medio] == objetivo:
+
+            pasos.append(
+                f"\nElemento encontrado en posicion {medio}"
+            )
+
+            return medio, pasos
+
+        elif lista[medio] < objetivo:
+
+            pasos.append(
+                "Buscando derecha"
+            )
+
+            izquierda = medio + 1
+
+        else:
+
+            pasos.append(
+                "Buscando izquierda"
+            )
+
+            derecha = medio - 1
+
+    pasos.append(
+        "\nElemento no encontrado"
+    )
+
+    return -1, pasos
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    datos = [3, 8, 15, 22, 41]
+
+    objetivo = 22
+
+    posicion, pasos = busqueda_binaria(
+        datos,
+        objetivo
+    )
