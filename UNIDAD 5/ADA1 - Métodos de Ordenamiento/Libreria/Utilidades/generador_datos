@@ -1,0 +1,72 @@
+# ============================================
+# GENERADOR DE DATOS
+# ============================================
+
+import random
+
+
+# ============================================
+# NUMEROS ALEATORIOS
+# ============================================
+
+def generar_numeros(
+    cantidad=10,
+    minimo=1,
+    maximo=100
+):
+
+    datos = []
+
+    for _ in range(cantidad):
+
+        numero = random.randint(
+            minimo,
+            maximo
+        )
+
+        datos.append(numero)
+
+    return datos
+
+
+# ============================================
+# TEXTO ALEATORIO
+# ============================================
+
+def generar_palabras():
+
+    palabras = [
+
+        "Python",
+        "Lista",
+        "Pila",
+        "Cola",
+        "Arbol",
+        "Hash",
+        "Grafo",
+        "Nodo",
+        "QuickSort",
+        "MergeSort"
+
+    ]
+
+    return random.choice(palabras)
+
+
+# ============================================
+# PRUEBA
+# ============================================
+
+if __name__ == "__main__":
+
+    print("Numeros generados:")
+
+    print(
+        generar_numeros()
+    )
+
+    print("\nPalabra aleatoria:")
+
+    print(
+        generar_palabras()
+    )
