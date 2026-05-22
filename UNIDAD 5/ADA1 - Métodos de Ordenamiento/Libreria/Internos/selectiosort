@@ -1,0 +1,102 @@
+# ============================================
+# LIBRERÍA RADIX SORT
+# ============================================
+
+def radix_sort(datos, ascendente=True):
+    """
+    Ordenamiento Radix Sort.
+    SOLO números enteros positivos.
+    """
+
+    arr = datos.copy()
+
+    # ========================================
+    # VALIDACIÓN
+    # ========================================
+
+    if not all(isinstance(x, int) and x >= 0 for x in arr):
+
+        raise ValueError(
+            "Radix Sort solo acepta enteros positivos."
+        )
+
+    # ========================================
+    # COUNTING SORT
+    # ========================================
+
+    def counting_sort(exp):
+
+        n = len(arr)
+
+        salida = [0] * n
+
+        conteo = [0] * 10
+
+        for i in range(n):
+
+            indice = (arr[i] // exp) % 10
+
+            conteo[indice] += 1
+
+        # Ascendente
+        if ascendente:
+
+            for i in range(1, 10):
+
+                conteo[i] += conteo[i - 1]
+
+        # Descendente
+        else:
+
+            for i in range(8, -1, -1):
+
+                conteo[i] += conteo[i + 1]
+
+        i = n - 1
+
+        while i >= 0:
+
+            indice = (arr[i] // exp) % 10
+
+            salida[conteo[indice] - 1] = arr[i]
+
+            conteo[indice] -= 1
+
+            i -= 1
+
+        for i in range(n):
+
+            arr[i] = salida[i]
+
+    # ========================================
+    # PROCESO PRINCIPAL
+    # ========================================
+
+    maximo = max(arr)
+
+    exp = 1
+
+    while maximo // exp > 0:
+
+        counting_sort(exp)
+
+        exp *= 10
+
+    return arr
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [170, 45, 75, 90, 802, 24, 2, 66]
+
+    print("\nNÚMEROS:")
+    print(radix_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(radix_sort(numeros, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
