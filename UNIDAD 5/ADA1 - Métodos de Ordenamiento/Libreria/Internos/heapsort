@@ -1,0 +1,97 @@
+# ============================================
+# LIBRERÍA HEAP SORT
+# ============================================
+
+def heap_sort(datos, ascendente=True):
+    """
+    Ordenamiento Heap Sort.
+    """
+
+    arr = datos.copy()
+
+    n = len(arr)
+
+    # ========================================
+    # HEAPIFY
+    # ========================================
+
+    def heapify(arr, n, i):
+
+        extremo = i
+
+        izquierda = 2 * i + 1
+
+        derecha = 2 * i + 2
+
+        # Ascendente -> Max Heap
+        if ascendente:
+
+            if izquierda < n and arr[izquierda] > arr[extremo]:
+
+                extremo = izquierda
+
+            if derecha < n and arr[derecha] > arr[extremo]:
+
+                extremo = derecha
+
+        # Descendente -> Min Heap
+        else:
+
+            if izquierda < n and arr[izquierda] < arr[extremo]:
+
+                extremo = izquierda
+
+            if derecha < n and arr[derecha] < arr[extremo]:
+
+                extremo = derecha
+
+        if extremo != i:
+
+            arr[i], arr[extremo] = arr[extremo], arr[i]
+
+            heapify(arr, n, extremo)
+
+    # ========================================
+    # CONSTRUIR HEAP
+    # ========================================
+
+    for i in range(n // 2 - 1, -1, -1):
+
+        heapify(arr, n, i)
+
+    # ========================================
+    # EXTRAER ELEMENTOS
+    # ========================================
+
+    for i in range(n - 1, 0, -1):
+
+        arr[i], arr[0] = arr[0], arr[i]
+
+        heapify(arr, i, 0)
+
+    return arr
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [12, 11, 13, 5, 6, 7]
+
+    palabras = ["kiwi", "manzana", "banana", "uva"]
+
+    print("\nNÚMEROS:")
+    print(heap_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(heap_sort(numeros, ascendente=False))
+
+    print("\nPALABRAS:")
+    print(heap_sort(palabras))
+
+    print("\nPALABRAS DESC:")
+    print(heap_sort(palabras, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
