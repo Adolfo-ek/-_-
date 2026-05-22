@@ -1,0 +1,1030 @@
+import tkinter as tk
+import time
+
+from datetime import datetime
+
+from tkinter import (
+    messagebox
+)
+
+from utilidades.generador_datos import (
+    generar_numeros
+)
+
+from utilidades.cargador import (
+    cargar_archivo
+)
+
+from utilidades.exportador import (
+    exportar_txt,
+    exportar_csv,
+    exportar_excel
+)
+
+from utilidades.comparador import (
+    medir_tiempos
+)
+
+from utilidades.grafica_comparador import (
+    mostrar_grafica
+)
+
+from utilidades.historial import (
+    guardar_ejecucion
+)
+
+from utilidades.animaciones import (
+    animar_burbuja,
+    animar_selection,
+    animar_insertion,
+    animar_quick,
+    animar_heap,
+    animar_shell,
+    animar_radix,
+    cambiar_velocidad
+)
+
+
+class InterfazInterna:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # =====================================
+        # CONFIG
+        # =====================================
+
+        self.root.title(
+            "Algorithm Visualizer Pro"
+        )
+
+        self.root.geometry(
+            "1850x980"
+        )
+
+        self.root.minsize(
+            1450,
+            850
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        self.datos = []
+
+        self.resultado_actual = []
+
+        # =====================================
+        # GRID ROOT
+        # =====================================
+
+        self.root.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        # =====================================
+        # HEADER
+        # =====================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=90
+        )
+
+        header.grid(
+            row=0,
+            column=0,
+            columnspan=2,
+            sticky="ew"
+        )
+
+        header.grid_propagate(False)
+
+        titulo = tk.Label(
+
+            header,
+
+            text="ALGORITHM VISUALIZER PRO",
+
+            font=(
+                "Segoe UI",
+                30,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        titulo.pack(
+            pady=(10, 0)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Sistema Profesional de Visualizacion y Analisis",
+
+            font=(
+                "Segoe UI",
+                12
+            ),
+
+            bg="#0f172a",
+
+            fg="#94a3b8"
+        )
+
+        subtitulo.pack()
+
+        # =====================================
+        # SIDEBAR
+        # =====================================
+
+        sidebar = tk.Frame(
+            root,
+            bg="#0f172a",
+            width=310
+        )
+
+        sidebar.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=(10, 5),
+            pady=10
+        )
+
+        sidebar.grid_propagate(False)
+
+        # =====================================
+        # SIDEBAR SCROLL
+        # =====================================
+
+        canvas = tk.Canvas(
+            sidebar,
+            bg="#0f172a",
+            highlightthickness=0
+        )
+
+        scrollbar = tk.Scrollbar(
+            sidebar,
+            orient="vertical",
+            command=canvas.yview
+        )
+
+        frame_sidebar = tk.Frame(
+            canvas,
+            bg="#0f172a"
+        )
+
+        frame_sidebar.bind(
+
+            "<Configure>",
+
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window(
+            (0, 0),
+            window=frame_sidebar,
+            anchor="nw"
+        )
+
+        canvas.configure(
+            yscrollcommand=scrollbar.set
+        )
+
+        canvas.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        scrollbar.pack(
+            side="right",
+            fill="y"
+        )
+
+        # =====================================
+        # MENU TITLE
+        # =====================================
+
+        menu = tk.Label(
+
+            frame_sidebar,
+
+            text="MENU INTERNO",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        menu.pack(
+            pady=20
+        )
+
+        # =====================================
+        # BUTTON CREATOR
+        # =====================================
+
+        def crear_boton(texto, comando, color):
+
+            boton = tk.Button(
+
+                frame_sidebar,
+
+                text=texto,
+
+                width=25,
+
+                height=2,
+
+                font=(
+                    "Segoe UI",
+                    10,
+                    "bold"
+                ),
+
+                bg=color,
+
+                fg="white",
+
+                activebackground="#38bdf8",
+
+                activeforeground="black",
+
+                relief="flat",
+
+                bd=0,
+
+                cursor="hand2",
+
+                command=comando
+            )
+
+            boton.pack(
+                pady=5
+            )
+
+        # =====================================
+        # BUTTONS
+        # =====================================
+
+        crear_boton(
+            "Cargar Archivo",
+            self.cargar_datos,
+            "#0ea5e9"
+        )
+
+        crear_boton(
+            "Bubble Sort",
+            self.ejecutar_burbuja,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Selection Sort",
+            self.ejecutar_selection,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Insertion Sort",
+            self.ejecutar_insertion,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Quick Sort",
+            self.ejecutar_quick,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Heap Sort",
+            self.ejecutar_heap,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Shell Sort",
+            self.ejecutar_shell,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Radix Sort",
+            self.ejecutar_radix,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Comparar Algoritmos",
+            self.comparar_algoritmos,
+            "#7c3aed"
+        )
+
+        # =====================================
+        # EXPORT
+        # =====================================
+
+        exportar = tk.Label(
+
+            frame_sidebar,
+
+            text="EXPORTAR",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#22c55e"
+        )
+
+        exportar.pack(
+            pady=(20, 10)
+        )
+
+        crear_boton(
+            "Exportar TXT",
+            self.guardar_txt,
+            "#14532d"
+        )
+
+        crear_boton(
+            "Exportar CSV",
+            self.guardar_csv,
+            "#166534"
+        )
+
+        crear_boton(
+            "Exportar Excel",
+            self.guardar_excel,
+            "#15803d"
+        )
+
+        # =====================================
+        # SPEED CONTROL
+        # =====================================
+
+        velocidad = tk.Label(
+
+            frame_sidebar,
+
+            text="CONTROL DE VELOCIDAD",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#facc15"
+        )
+
+        velocidad.pack(
+            pady=(25, 10)
+        )
+
+        self.slider_velocidad = tk.Scale(
+
+            frame_sidebar,
+
+            from_=0.01,
+
+            to=0.50,
+
+            resolution=0.01,
+
+            orient="horizontal",
+
+            length=220,
+
+            bg="#0f172a",
+
+            fg="white",
+
+            troughcolor="#334155",
+
+            activebackground="#38bdf8",
+
+            highlightthickness=0,
+
+            font=(
+                "Segoe UI",
+                9
+            ),
+
+            command=self.actualizar_velocidad
+        )
+
+        self.slider_velocidad.set(
+            0.08
+        )
+
+        self.slider_velocidad.pack(
+            pady=(0, 20)
+        )
+
+        # =====================================
+        # RIGHT PANEL
+        # =====================================
+
+        panel = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        panel.grid(
+            row=1,
+            column=1,
+            sticky="nsew",
+            padx=(5, 10),
+            pady=10
+        )
+
+        panel.grid_rowconfigure(
+            2,
+            weight=1
+        )
+
+        panel.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =====================================
+        # INFO
+        # =====================================
+
+        info = tk.Frame(
+            panel,
+            bg="#111827",
+            height=100
+        )
+
+        info.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            pady=(0, 10)
+        )
+
+        info.grid_propagate(False)
+
+        titulo_info = tk.Label(
+
+            info,
+
+            text="INFORMACION DEL SISTEMA",
+
+            font=(
+                "Segoe UI",
+                16,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#facc15"
+        )
+
+        titulo_info.pack(
+            pady=(10, 5)
+        )
+
+        self.label_estado = tk.Label(
+
+            info,
+
+            text="Estado: Esperando datos",
+
+            font=(
+                "Segoe UI",
+                10
+            ),
+
+            bg="#111827",
+
+            fg="white"
+        )
+
+        self.label_estado.pack()
+
+        # =====================================
+        # DASHBOARD
+        # =====================================
+
+        dashboard = tk.Frame(
+            panel,
+            bg="#020617"
+        )
+
+        dashboard.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            pady=(0, 10)
+        )
+
+        for i in range(4):
+
+            dashboard.grid_columnconfigure(
+                i,
+                weight=1,
+                uniform="col"
+            )
+
+        def crear_card(
+            row,
+            column,
+            titulo,
+            color
+        ):
+
+            card = tk.Frame(
+                dashboard,
+                bg="#111827",
+                height=120
+            )
+
+            card.grid(
+                row=row,
+                column=column,
+                padx=10,
+                pady=10,
+                sticky="nsew"
+            )
+
+            card.grid_propagate(False)
+
+            titulo_label = tk.Label(
+
+                card,
+
+                text=titulo,
+
+                font=(
+                    "Segoe UI",
+                    11,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg=color
+            )
+
+            titulo_label.pack(
+                pady=(18, 8)
+            )
+
+            valor = tk.Label(
+
+                card,
+
+                text="---",
+
+                font=(
+                    "Segoe UI",
+                    16,
+                    "bold"
+                ),
+
+                bg="#111827",
+
+                fg="white"
+            )
+
+            valor.pack()
+
+            return valor
+
+        self.card_cantidad = crear_card(
+            0,
+            0,
+            "CANTIDAD",
+            "#38bdf8"
+        )
+
+        self.card_minimo = crear_card(
+            0,
+            1,
+            "MINIMO",
+            "#22c55e"
+        )
+
+        self.card_maximo = crear_card(
+            0,
+            2,
+            "MAXIMO",
+            "#f97316"
+        )
+
+        self.card_promedio = crear_card(
+            0,
+            3,
+            "PROMEDIO",
+            "#a855f7"
+        )
+
+        self.card_algoritmo = crear_card(
+            1,
+            0,
+            "ALGORITMO",
+            "#06b6d4"
+        )
+
+        self.card_tiempo = crear_card(
+            1,
+            1,
+            "TIEMPO",
+            "#22c55e"
+        )
+
+        self.card_tipo = crear_card(
+            1,
+            2,
+            "TIPO",
+            "#f97316"
+        )
+
+        self.card_ultima = crear_card(
+            1,
+            3,
+            "ULTIMA EJECUCION",
+            "#a855f7"
+        )
+
+    # =====================================
+    # DASHBOARD UPDATE
+    # =====================================
+
+    def actualizar_dashboard_ejecucion(
+
+        self,
+        algoritmo,
+        tiempo
+    ):
+
+        hora = datetime.now().strftime(
+            "%H:%M:%S"
+        )
+
+        self.card_algoritmo.config(
+            text=algoritmo
+        )
+
+        self.card_tiempo.config(
+            text=f"{tiempo:.6f}s"
+        )
+
+        self.card_tipo.config(
+            text="INTERNO"
+        )
+
+        self.card_ultima.config(
+            text=hora
+        )
+
+    # =====================================
+    # SPEED
+    # =====================================
+
+    def actualizar_velocidad(self, valor):
+
+        cambiar_velocidad(
+            float(valor)
+        )
+
+    # =====================================
+    # LOAD DATA
+    # =====================================
+
+    def cargar_datos(self):
+
+        self.datos = cargar_archivo()
+
+        if self.datos:
+
+            self.actualizar_estadisticas()
+
+            self.label_estado.config(
+                text=f"Estado: {len(self.datos)} datos cargados"
+            )
+
+            messagebox.showinfo(
+                "Archivo",
+                f"Se cargaron {len(self.datos)} datos."
+            )
+
+    # =====================================
+    # UPDATE STATS
+    # =====================================
+
+    def actualizar_estadisticas(self):
+
+        if not self.datos:
+            return
+
+        cantidad = len(self.datos)
+
+        minimo = min(self.datos)
+
+        maximo = max(self.datos)
+
+        promedio = sum(self.datos) / cantidad
+
+        self.card_cantidad.config(
+            text=str(cantidad)
+        )
+
+        self.card_minimo.config(
+            text=str(minimo)
+        )
+
+        self.card_maximo.config(
+            text=str(maximo)
+        )
+
+        self.card_promedio.config(
+            text=f"{promedio:.2f}"
+        )
+
+    # =====================================
+    # GET DATA
+    # =====================================
+
+    def obtener_datos(self):
+
+        if self.datos:
+            return self.datos.copy()
+
+        return generar_numeros(
+            15,
+            1,
+            100
+        )
+
+    # =====================================
+    # EXECUTIONS
+    # =====================================
+
+    def ejecutar_burbuja(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_burbuja(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Bubble Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Bubble Sort",
+            tiempo
+        )
+
+    def ejecutar_selection(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_selection(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Selection Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Selection Sort",
+            tiempo
+        )
+
+    def ejecutar_insertion(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_insertion(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Insertion Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Insertion Sort",
+            tiempo
+        )
+
+    def ejecutar_quick(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_quick(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Quick Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Quick Sort",
+            tiempo
+        )
+
+    def ejecutar_heap(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_heap(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Heap Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Heap Sort",
+            tiempo
+        )
+
+    def ejecutar_shell(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_shell(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Shell Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Shell Sort",
+            tiempo
+        )
+
+    def ejecutar_radix(self):
+
+        datos = self.obtener_datos()
+
+        inicio = time.perf_counter()
+
+        animar_radix(datos)
+
+        resultado = sorted(datos)
+
+        fin = time.perf_counter()
+
+        tiempo = fin - inicio
+
+        guardar_ejecucion(
+            "INTERNO",
+            "Radix Sort",
+            len(resultado),
+            tiempo
+        )
+
+        self.actualizar_dashboard_ejecucion(
+            "Radix Sort",
+            tiempo
+        )
+
+    # =====================================
+    # EXPORT
+    # =====================================
+
+    def guardar_txt(self):
+
+        if self.resultado_actual:
+            exportar_txt(
+                self.resultado_actual
+            )
+
+    def guardar_csv(self):
+
+        if self.resultado_actual:
+            exportar_csv(
+                self.resultado_actual
+            )
+
+    def guardar_excel(self):
+
+        if self.resultado_actual:
+            exportar_excel(
+                self.resultado_actual
+            )
+
+    # =====================================
+    # COMPARATOR
+    # =====================================
+
+    def comparar_algoritmos(self):
+
+        datos = self.obtener_datos()
+
+        resultados = medir_tiempos(
+            datos
+        )
+
+        mostrar_grafica(
+            resultados
+        )
+
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = InterfazInterna(root)
+
+    root.mainloop()
