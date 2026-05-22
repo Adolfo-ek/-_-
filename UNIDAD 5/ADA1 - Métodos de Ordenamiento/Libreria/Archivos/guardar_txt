@@ -1,0 +1,27 @@
+# ============================================
+# GUARDAR DATOS EN TXT
+# ============================================
+
+def guardar_txt(ruta, datos):
+
+    with open(ruta, "w", encoding="utf-8") as archivo:
+
+        for numero in datos:
+
+            archivo.write(str(numero) + " ")
+
+    print("Archivo guardado correctamente")
+
+
+# ============================================
+# PRUEBA
+# ============================================
+
+if __name__ == "__main__":
+
+    datos = [1, 5, 8, 10, 25, 90]
+
+    guardar_txt(
+        "resultado.txt",
+        datos
+    )
