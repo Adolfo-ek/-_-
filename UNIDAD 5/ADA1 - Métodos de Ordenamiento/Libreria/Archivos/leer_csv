@@ -1,0 +1,42 @@
+import csv
+
+from utilidades.normalizador import (
+    normalizar_lista
+)
+
+
+# =========================================
+# LEER CSV
+# =========================================
+
+def leer_csv(ruta):
+
+    try:
+
+        datos = []
+
+        with open(
+
+            ruta,
+
+            "r",
+
+            encoding="utf-8"
+
+        ) as archivo:
+
+            lector = csv.reader(
+                archivo
+            )
+
+            for fila in lector:
+
+                for elemento in fila:
+
+                    datos.append(
+                        elemento
+                    )
+
+        return normalizar_lista(
+            datos
+        )
