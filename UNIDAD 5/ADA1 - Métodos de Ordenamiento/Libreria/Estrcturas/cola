@@ -1,0 +1,97 @@
+# ============================================
+# ESTRUCTURA COLA (QUEUE)
+# ============================================
+
+class Cola:
+
+    def __init__(self):
+
+        self.items = []
+
+    # ========================================
+    # ENCOLAR
+    # ========================================
+
+    def enqueue(self, elemento):
+
+        self.items.append(elemento)
+
+    # ========================================
+    # DESENCOLAR
+    # ========================================
+
+    def dequeue(self):
+
+        if not self.esta_vacia():
+
+            return self.items.pop(0)
+
+        return "La cola está vacía."
+
+    # ========================================
+    # FRENTE
+    # ========================================
+
+    def front(self):
+
+        if not self.esta_vacia():
+
+            return self.items[0]
+
+        return None
+
+    # ========================================
+    # VERIFICAR VACÍA
+    # ========================================
+
+    def esta_vacia(self):
+
+        return len(self.items) == 0
+
+    # ========================================
+    # TAMAÑO
+    # ========================================
+
+    def size(self):
+
+        return len(self.items)
+
+    # ========================================
+    # MOSTRAR
+    # ========================================
+
+    def mostrar(self):
+
+        return self.items
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    cola = Cola()
+
+    cola.enqueue("Proceso 1")
+
+    cola.enqueue("Proceso 2")
+
+    cola.enqueue("Proceso 3")
+
+    print("\nCola actual:")
+    print(cola.mostrar())
+
+    print("\nElemento atendido:")
+    print(cola.dequeue())
+
+    print("\nFrente:")
+    print(cola.front())
+
+    print("\nTamaño:")
+    print(cola.size())
+
+    print("\nCola final:")
+    print(cola.mostrar())
+
+    input("\nPresiona ENTER para cerrar...")
