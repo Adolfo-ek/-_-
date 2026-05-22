@@ -1,0 +1,718 @@
+import tkinter as tk
+
+from tkinter import (
+    messagebox,
+    ttk
+)
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
+from utilidades.generador_datos import generar_numeros
+from utilidades.cargador import cargar_archivo
+
+from utilidades.exportador import (
+    exportar_txt,
+    exportar_csv,
+    exportar_excel
+)
+
+from utilidades.comparador import (
+    medir_tiempos
+)
+
+from utilidades.grafica_comparador import (
+    mostrar_grafica
+)
+
+from utilidades.animaciones import (
+    animar_burbuja,
+    animar_selection,
+    animar_insertion,
+    animar_quick,
+    animar_heap,
+    animar_shell,
+    animar_radix,
+    cambiar_velocidad
+)
+
+
+class InterfazInterna:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # =========================================
+        # CONFIG GENERAL
+        # =========================================
+
+        self.root.title(
+            "Algorithm Visualizer Pro"
+        )
+
+        self.root.geometry(
+            "1700x950"
+        )
+
+        self.root.configure(
+            bg="#020617"
+        )
+
+        self.datos = []
+
+        self.resultado_actual = []
+
+        self.algoritmo_actual = ""
+
+        # =========================================
+        # FIGURA
+        # =========================================
+
+        self.figura = Figure(
+            figsize=(7, 4),
+            dpi=100
+        )
+
+        self.ax = self.figura.add_subplot(111)
+
+        self.canvas = None
+
+        # =========================================
+        # GRID ROOT
+        # =========================================
+
+        self.root.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        self.root.grid_columnconfigure(
+            2,
+            weight=1
+        )
+
+        # =========================================
+        # HEADER
+        # =========================================
+
+        header = tk.Frame(
+            root,
+            bg="#0f172a",
+            height=85
+        )
+
+        header.grid(
+            row=0,
+            column=0,
+            columnspan=3,
+            sticky="nsew"
+        )
+
+        titulo = tk.Label(
+
+            header,
+
+            text="ALGORITHM VISUALIZER PRO",
+
+            font=(
+                "Segoe UI",
+                28,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        titulo.pack(
+            pady=(10, 0)
+        )
+
+        subtitulo = tk.Label(
+
+            header,
+
+            text="Sistema Profesional de Analisis y Visualizacion",
+
+            font=(
+                "Segoe UI",
+                11
+            ),
+
+            bg="#0f172a",
+
+            fg="#94a3b8"
+        )
+
+        subtitulo.pack()
+
+        # =========================================
+        # SIDEBAR
+        # =========================================
+
+        sidebar = tk.Frame(
+            root,
+            bg="#0f172a",
+            width=300
+        )
+
+        sidebar.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=(10, 5),
+            pady=10
+        )
+
+        canvas_sidebar = tk.Canvas(
+            sidebar,
+            bg="#0f172a",
+            highlightthickness=0
+        )
+
+        scrollbar_sidebar = tk.Scrollbar(
+            sidebar,
+            orient="vertical",
+            command=canvas_sidebar.yview
+        )
+
+        frame_sidebar = tk.Frame(
+            canvas_sidebar,
+            bg="#0f172a"
+        )
+
+        frame_sidebar.bind(
+
+            "<Configure>",
+
+            lambda e: canvas_sidebar.configure(
+                scrollregion=canvas_sidebar.bbox("all")
+            )
+        )
+
+        canvas_sidebar.create_window(
+            (0, 0),
+            window=frame_sidebar,
+            anchor="nw"
+        )
+
+        canvas_sidebar.configure(
+            yscrollcommand=scrollbar_sidebar.set
+        )
+
+        canvas_sidebar.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        scrollbar_sidebar.pack(
+            side="right",
+            fill="y"
+        )
+
+        menu_label = tk.Label(
+
+            frame_sidebar,
+
+            text="MENU PRINCIPAL",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#38bdf8"
+        )
+
+        menu_label.pack(
+            pady=15
+        )
+
+        # =========================================
+        # ORDEN
+        # =========================================
+
+        orden_label = tk.Label(
+
+            frame_sidebar,
+
+            text="TIPO DE ORDEN",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#facc15"
+        )
+
+        orden_label.pack(
+            pady=(10, 5)
+        )
+
+        self.combo_orden = ttk.Combobox(
+
+            frame_sidebar,
+
+            values=[
+                "Ascendente",
+                "Descendente"
+            ],
+
+            state="readonly",
+
+            width=25
+        )
+
+        self.combo_orden.current(0)
+
+        self.combo_orden.pack(
+            pady=(0, 20)
+        )
+
+        # =========================================
+        # FUNCION BOTONES
+        # =========================================
+
+        def crear_boton(texto, comando, color):
+
+            boton = tk.Button(
+
+                frame_sidebar,
+
+                text=texto,
+
+                width=25,
+
+                height=2,
+
+                font=(
+                    "Segoe UI",
+                    10,
+                    "bold"
+                ),
+
+                bg=color,
+
+                fg="white",
+
+                activebackground="#38bdf8",
+
+                activeforeground="black",
+
+                relief="flat",
+
+                bd=0,
+
+                cursor="hand2",
+
+                command=comando
+            )
+
+            boton.pack(
+                pady=5
+            )
+
+        # =========================================
+        # BOTONES
+        # =========================================
+
+        crear_boton(
+            "Cargar Archivo",
+            self.cargar_datos,
+            "#0ea5e9"
+        )
+
+        crear_boton(
+            "Bubble Sort",
+            self.ejecutar_burbuja,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Selection Sort",
+            self.ejecutar_selection,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Insertion Sort",
+            self.ejecutar_insertion,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Quick Sort",
+            self.ejecutar_quick,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Heap Sort",
+            self.ejecutar_heap,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Shell Sort",
+            self.ejecutar_shell,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Radix Sort",
+            self.ejecutar_radix,
+            "#1e293b"
+        )
+
+        crear_boton(
+            "Comparar Algoritmos",
+            self.comparar_algoritmos,
+            "#7c3aed"
+        )
+
+        # =========================================
+        # EXPORTAR
+        # =========================================
+
+        exportar_label = tk.Label(
+
+            frame_sidebar,
+
+            text="EXPORTAR",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#22c55e"
+        )
+
+        exportar_label.pack(
+            pady=(20, 10)
+        )
+
+        crear_boton(
+            "Exportar TXT",
+            self.guardar_txt,
+            "#14532d"
+        )
+
+        crear_boton(
+            "Exportar CSV",
+            self.guardar_csv,
+            "#166534"
+        )
+
+        crear_boton(
+            "Exportar Excel",
+            self.guardar_excel,
+            "#15803d"
+        )
+
+        # =========================================
+        # VELOCIDAD
+        # =========================================
+
+        velocidad_label = tk.Label(
+
+            frame_sidebar,
+
+            text="CONTROL DE VELOCIDAD",
+
+            font=(
+                "Segoe UI",
+                12,
+                "bold"
+            ),
+
+            bg="#0f172a",
+
+            fg="#facc15"
+        )
+
+        velocidad_label.pack(
+            pady=(25, 10)
+        )
+
+        self.slider_velocidad = tk.Scale(
+
+            frame_sidebar,
+
+            from_=0.01,
+
+            to=0.50,
+
+            resolution=0.01,
+
+            orient="horizontal",
+
+            length=220,
+
+            bg="#0f172a",
+
+            fg="white",
+
+            troughcolor="#334155",
+
+            activebackground="#38bdf8",
+
+            highlightthickness=0,
+
+            command=self.actualizar_velocidad
+        )
+
+        self.slider_velocidad.set(
+            0.08
+        )
+
+        self.slider_velocidad.pack(
+            pady=(0, 20)
+        )
+
+        # =========================================
+        # CENTRO
+        # =========================================
+
+        centro = tk.Frame(
+            root,
+            bg="#020617"
+        )
+
+        centro.grid(
+            row=1,
+            column=1,
+            sticky="nsew",
+            padx=5,
+            pady=10
+        )
+
+        centro.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
+        centro.grid_rowconfigure(
+            1,
+            weight=2
+        )
+
+        centro.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        # =========================================
+        # DATOS CARD
+        # =========================================
+
+        datos_card = tk.Frame(
+            centro,
+            bg="#111827"
+        )
+
+        datos_card.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
+            pady=(0, 10)
+        )
+
+        datos_titulo = tk.Label(
+
+            datos_card,
+
+            text="DATOS CARGADOS",
+
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#22d3ee"
+        )
+
+        datos_titulo.pack(
+            pady=15
+        )
+
+        self.area_datos = tk.Text(
+
+            datos_card,
+
+            height=10,
+
+            bg="#020617",
+
+            fg="white",
+
+            font=(
+                "Consolas",
+                11
+            ),
+
+            relief="flat",
+
+            insertbackground="white"
+        )
+
+        self.area_datos.pack(
+            expand=True,
+            fill="both",
+            padx=15,
+            pady=(0, 15)
+        )
+
+        # =========================================
+        # GRAFICA
+        # =========================================
+
+        grafica_card = tk.Frame(
+            centro,
+            bg="#111827",
+            height=420
+        )
+
+        grafica_card.grid(
+            row=1,
+            column=0,
+            sticky="nsew"
+        )
+
+        grafica_card.grid_propagate(False)
+
+        grafica_titulo = tk.Label(
+
+            grafica_card,
+
+            text="VISUALIZADOR EN TIEMPO REAL",
+
+            font=(
+                "Segoe UI",
+                16,
+                "bold"
+            ),
+
+            bg="#111827",
+
+            fg="#38bdf8"
+        )
+
+        grafica_titulo.pack(
+            pady=10
+        )
+
+        self.canvas = FigureCanvasTkAgg(
+            self.figura,
+            master=grafica_card
+        )
+
+        widget_canvas = self.canvas.get_tk_widget()
+
+        widget_canvas.pack(
+            fill="both",
+            expand=True,
+            padx=10,
+            pady=10
+        )
+
+        self.ax.set_facecolor("#020617")
+
+        self.figura.patch.set_facecolor("#111827")
+
+        self.ax.set_title(
+            "Esperando Datos...",
+            color="white"
+        )
+
+        self.ax.tick_params(
+            colors="white"
+        )
+
+        self.canvas.draw()
+
+    # =========================================
+    # CARGAR DATOS
+    # =========================================
+
+    def cargar_datos(self):
+
+        self.datos = cargar_archivo()
+
+        if not self.datos:
+
+            return
+
+        self.area_datos.delete(
+            "1.0",
+            tk.END
+        )
+
+        self.area_datos.insert(
+            tk.END,
+            str(self.datos)
+        )
+
+        messagebox.showinfo(
+            "Exito",
+            "Datos cargados correctamente."
+        )
+
+    # =========================================
+    # ORDEN FINAL
+    # =========================================
+
+    def aplicar_orden(self, lista):
+
+        if self.combo_orden.get() == "Descendente":
+
+            lista.reverse()
+
+        return lista
+
+    # =========================================
+    # MOSTRAR RESUMEN
+    # =========================================
+
+    def mostrar_resumen(self):
+
+        self.area_datos.insert(
+            tk.END,
+            f"\n\n========== RESUMEN ==========\n"
+        )
+
+        self.area_datos.insert(
+            tk.END,
+            f"\nTotal registros: {len(self.resultado_actual)}"
+        )
+
+        self.area_datos.insert(
+            tk.END,
+            f"\n\nPrimeros 20:\n{self.resultado_actual[:20]}"
+        )
+
+        self.area_datos.insert(
+            tk.END,
+            f"\n\nUltimos 20:\n{self.resultado_actual[-20:]}"
+        )
