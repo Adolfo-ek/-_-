@@ -1,0 +1,86 @@
+# ============================================
+# VISUALIZADOR DE DATOS
+# ============================================
+
+import matplotlib.pyplot as plt
+
+
+# ============================================
+# GRAFICAR DATOS
+# ============================================
+
+def graficar(
+    datos,
+    titulo="Visualizacion de Datos"
+):
+
+    plt.figure(
+        figsize=(12, 6)
+    )
+
+    barras = plt.bar(
+
+        range(len(datos)),
+
+        datos,
+
+        color="skyblue",
+
+        edgecolor="black"
+    )
+
+    plt.title(
+        titulo,
+        fontsize=18
+    )
+
+    plt.xlabel(
+        "Posicion"
+    )
+
+    plt.ylabel(
+        "Valor"
+    )
+
+    # Mostrar valores
+    for barra in barras:
+
+        altura = barra.get_height()
+
+        plt.text(
+
+            barra.get_x()
+            + barra.get_width() / 2,
+
+            altura,
+
+            str(int(altura)),
+
+            ha="center",
+
+            va="bottom"
+        )
+
+    plt.grid(
+        axis="y",
+        linestyle="--",
+        alpha=0.5
+    )
+
+    plt.tight_layout()
+
+    plt.show()
+
+
+# ============================================
+# PRUEBA
+# ============================================
+
+if __name__ == "__main__":
+
+    datos = [10, 50, 20, 80, 30, 90]
+
+    graficar(
+        datos,
+        "Grafica de Prueba"
+    )
