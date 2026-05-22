@@ -1,0 +1,57 @@
+# =========================================
+# CONVERTIR DATO
+# =========================================
+
+def convertir_dato(valor):
+
+    valor = str(valor).strip()
+
+    # =====================================
+    # ENTERO
+    # =====================================
+
+    try:
+
+        return int(valor)
+
+    except:
+        pass
+
+    # =====================================
+    # FLOAT
+    # =====================================
+
+    try:
+
+        return float(valor)
+
+    except:
+        pass
+
+    # =====================================
+    # TEXTO
+    # =====================================
+
+    return valor
+
+
+# =========================================
+# NORMALIZAR LISTA
+# =========================================
+
+def normalizar_lista(lista):
+
+    resultado = []
+
+    for elemento in lista:
+
+        elemento = str(elemento).strip()
+
+        if elemento == "":
+            continue
+
+        resultado.append(
+            convertir_dato(elemento)
+        )
+
+    return resultado
