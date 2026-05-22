@@ -1,0 +1,107 @@
+# ============================================
+# VALIDACIONES
+# ============================================
+
+
+# ============================================
+# VALIDAR NUMERO
+# ============================================
+
+def es_numero(valor):
+
+    try:
+
+        float(valor)
+
+        return True
+
+    except:
+
+        return False
+
+
+# ============================================
+# VALIDAR LISTA
+# ============================================
+
+def lista_vacia(lista):
+
+    return len(lista) == 0
+
+
+# ============================================
+# VALIDAR SOLO NUMEROS
+# ============================================
+
+def validar_numeros(lista):
+
+    for elemento in lista:
+
+        if not isinstance(
+            elemento,
+            (int, float)
+        ):
+
+            return False
+
+    return True
+
+
+# ============================================
+# VALIDAR RANGO
+# ============================================
+
+def validar_rango(
+    numero,
+    minimo,
+    maximo
+):
+
+    return minimo <= numero <= maximo
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    print("Validar numero:")
+
+    print(
+        es_numero("45")
+    )
+
+    print(
+        es_numero("Hola")
+    )
+
+    print("\nLista vacia:")
+
+    print(
+        lista_vacia([])
+    )
+
+    print(
+        lista_vacia([1, 2, 3])
+    )
+
+    print("\nValidar numeros:")
+
+    print(
+        validar_numeros([1, 2, 3])
+    )
+
+    print(
+        validar_numeros([1, "Hola", 3])
+    )
+
+    print("\nValidar rango:")
+
+    print(
+        validar_rango(10, 1, 20)
+    )
+
+    print(
+        validar_rango(50, 1, 20)
+    )
