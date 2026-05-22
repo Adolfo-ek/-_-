@@ -1,0 +1,32 @@
+import pandas as pd
+
+from utilidades.normalizador import (
+    normalizar_lista
+)
+
+
+# =========================================
+# LEER EXCEL
+# =========================================
+
+def leer_excel(ruta):
+
+    try:
+
+        df = pd.read_excel(
+            ruta
+        )
+
+        datos = []
+
+        for columna in df.columns:
+
+            datos.extend(
+                df[columna]
+                .dropna()
+                .tolist()
+            )
+
+        return normalizar_lista(
+            datos
+        )
