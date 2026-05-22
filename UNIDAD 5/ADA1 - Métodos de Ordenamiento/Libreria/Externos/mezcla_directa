@@ -1,0 +1,270 @@
+import os
+
+
+# =========================================
+# LEER ARCHIVO UNIVERSAL
+# =========================================
+
+def leer_archivo(ruta):
+
+    from archivos.leer_txt import leer_txt
+    from archivos.leer_csv import leer_csv
+    from archivos.leer_excel import leer_excel
+    from archivos.leer_json import leer_json
+    from archivos.leer_word import leer_word
+
+    # =====================================
+    # DETECTAR FORMATO
+    # =====================================
+
+    if ruta.endswith(".txt"):
+
+        datos = leer_txt(ruta)
+
+    elif ruta.endswith(".csv"):
+
+        datos = leer_csv(ruta)
+
+    elif ruta.endswith(".xlsx"):
+
+        datos = leer_excel(ruta)
+
+    elif ruta.endswith(".json"):
+
+        datos = leer_json(ruta)
+
+    elif ruta.endswith(".docx"):
+
+        datos = leer_word(ruta)
+
+    else:
+
+        raise ValueError(
+            "Formato no soportado"
+        )
+
+    # =====================================
+    # SOLO NUMEROS
+    # =====================================
+
+    resultado = []
+
+    for dato in datos:
+
+        try:
+
+            resultado.append(
+                int(float(dato))
+            )
+
+        except:
+            pass
+
+    return resultado
+
+
+# =========================================
+# ESCRIBIR ARCHIVO
+# =========================================
+
+def escribir_archivo(ruta, datos):
+
+    with open(
+        ruta,
+        "w",
+        encoding="utf-8"
+    ) as archivo:
+
+        for numero in datos:
+
+            archivo.write(
+                f"{numero}\n"
+            )
+
+
+# =========================================
+# DIVIDIR
+# =========================================
+
+def dividir(lista):
+
+    mitad = len(lista) // 2
+
+    izquierda = lista[:mitad]
+
+    derecha = lista[mitad:]
+
+    return izquierda, derecha
+
+
+# =========================================
+# MEZCLAR
+# =========================================
+
+def mezclar(izquierda, derecha, logs):
+
+    resultado = []
+
+    i = 0
+    j = 0
+
+    logs.append(
+        "\nFusionando:"
+    )
+
+    logs.append(
+        str(izquierda)
+    )
+
+    logs.append(
+        str(derecha)
+    )
+
+    while i < len(izquierda) and j < len(derecha):
+
+        if izquierda[i] < derecha[j]:
+
+            resultado.append(
+                izquierda[i]
+            )
+
+            i += 1
+
+        else:
+
+            resultado.append(
+                derecha[j]
+            )
+
+            j += 1
+
+    resultado.extend(
+        izquierda[i:]
+    )
+
+    resultado.extend(
+        derecha[j:]
+    )
+
+    logs.append(
+        f"Resultado fusion: {resultado}\n"
+    )
+
+    return resultado
+
+
+# =========================================
+# MEZCLA DIRECTA
+# =========================================
+
+def merge_sort(lista, logs):
+
+    if len(lista) <= 1:
+
+        return lista
+
+    izquierda, derecha = dividir(
+        lista
+    )
+
+    izquierda = merge_sort(
+        izquierda,
+        logs
+    )
+
+    derecha = merge_sort(
+        derecha,
+        logs
+    )
+
+    return mezclar(
+        izquierda,
+        derecha,
+        logs
+    )
+
+
+# =========================================
+# PRINCIPAL
+# =========================================
+
+def mezcla_directa(ruta_archivo):
+
+    logs = []
+
+    logs.append(
+        "\n======================================"
+    )
+
+    logs.append(
+        "           MEZCLA DIRECTA"
+    )
+
+    logs.append(
+        "======================================"
+    )
+
+    datos = leer_archivo(
+        ruta_archivo
+    )
+
+    logs.append(
+        "\nDatos originales:\n"
+    )
+
+    logs.append(
+        str(datos)
+    )
+
+    resultado = merge_sort(
+        datos,
+        logs
+    )
+
+    logs.append(
+        "\n========== RESULTADO FINAL ==========\n"
+    )
+
+    logs.append(
+        str(resultado)
+    )
+
+    ruta_salida = (
+        "resultado_mezcla_directa.txt"
+    )
+
+    escribir_archivo(
+        ruta_salida,
+        resultado
+    )
+
+    logs.append(
+        f"\nArchivo generado: {ruta_salida}"
+    )
+
+    return resultado, logs
+
+
+# =========================================
+# MAIN
+# =========================================
+
+if __name__ == "__main__":
+
+    ruta = "datos.txt"
+
+    if os.path.exists(ruta):
+
+        resultado, logs = mezcla_directa(
+            ruta
+        )
+
+        for linea in logs:
+
+            print(linea)
+
+    else:
+
+        print(
+            "\nNo existe datos.txt\n"
+        )
