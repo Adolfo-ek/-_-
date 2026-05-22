@@ -1,0 +1,69 @@
+# ============================================
+# LIBRERÍA QUICK SORT
+# ============================================
+
+def quick_sort(datos, ascendente=True):
+    """
+    Ordenamiento Quick Sort.
+    """
+
+    arr = datos.copy()
+
+    # ========================================
+    # FUNCIÓN RECURSIVA
+    # ========================================
+
+    def quick(lista):
+
+        if len(lista) <= 1:
+
+            return lista
+
+        pivote = lista[len(lista) // 2]
+
+        # Ascendente
+        if ascendente:
+
+            menores = [x for x in lista if x < pivote]
+
+            iguales = [x for x in lista if x == pivote]
+
+            mayores = [x for x in lista if x > pivote]
+
+        # Descendente
+        else:
+
+            mayores = [x for x in lista if x > pivote]
+
+            iguales = [x for x in lista if x == pivote]
+
+            menores = [x for x in lista if x < pivote]
+
+        return quick(menores) + iguales + quick(mayores)
+
+    return quick(arr)
+
+
+# ============================================
+# PRUEBAS
+# ============================================
+
+if __name__ == "__main__":
+
+    numeros = [45, 12, 89, 33, 7, 21]
+
+    palabras = ["nube", "avion", "barco", "tren"]
+
+    print("\nNÚMEROS:")
+    print(quick_sort(numeros))
+
+    print("\nNÚMEROS DESC:")
+    print(quick_sort(numeros, ascendente=False))
+
+    print("\nPALABRAS:")
+    print(quick_sort(palabras))
+
+    print("\nPALABRAS DESC:")
+    print(quick_sort(palabras, ascendente=False))
+
+    input("\nPresiona ENTER para cerrar...")
